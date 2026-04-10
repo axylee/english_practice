@@ -251,7 +251,7 @@ input[type=range] {
 /* ── Buttons ── */
 .btn-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 .btn {
@@ -263,11 +263,11 @@ input[type=range] {
   transition: all 0.12s;
   border: 1px solid var(--border);
   font-weight: 700;
-  /* good touch feedback */
   -webkit-user-select: none;
   user-select: none;
 }
 .btn:active { transform: scale(0.95); }
+.btn:disabled { opacity: 0.28; cursor: default; transform: none; }
 .btn-speak {
   background: rgba(232,160,32,0.12);
   border-color: var(--accent);
@@ -280,6 +280,12 @@ input[type=range] {
   color: var(--green);
 }
 .btn-word:active { background: rgba(80,192,128,0.25); }
+.btn-prev {
+  background: var(--surface2);
+  color: var(--muted);
+  border-color: var(--border);
+}
+.btn-prev:active:not(:disabled) { background: var(--border); color: var(--text); }
 .btn-next {
   background: var(--surface2);
   color: var(--text);
@@ -422,8 +428,9 @@ input[type=range] {
   <div class="panel">
     <div class="panel-title">播放控制</div>
     <div class="btn-grid">
-      <button class="btn btn-speak" id="spkbtn" onclick="speakAll()">▶ 整句</button>
-      <button class="btn btn-word" id="wordbtn" onclick="speakWBW()">▶ 逐字</button>
+      <button class="btn btn-speak" onclick="speakAll()">▶ 整句</button>
+      <button class="btn btn-word" onclick="speakWBW()">▶ 逐字</button>
+      <button class="btn btn-prev" id="prevbtn" onclick="prev()" disabled>← 上一句</button>
       <button class="btn btn-next" onclick="next()">下一句 →</button>
     </div>
     <div class="hint">點句子中的單字可單獨朗讀</div>
@@ -612,6 +619,7 @@ const ALL = [
 // ── TTS ──
 const synth = window.speechSynthesis;
 let voices = [], current = null, showT = false, pool = [], used = new Set();
+let history = [], historyIdx = -1;
 
 function loadVoices() {
   voices = synth ? synth.getVoices().filter(v => v.lang.startsWith("en")) : [];
@@ -634,7 +642,10 @@ function applyFilter() {
   const tp = document.getElementById("tsel").value;
   pool = ALL.filter(s => (lv === "all" || s.lv === lv) && (tp === "all" || s.t === tp));
   used = new Set();
+  history = [];
+  historyIdx = -1;
   document.getElementById("cnt").textContent = pool.length + " 句";
+  document.getElementById("prevbtn").disabled = true;
   next();
 }
 
@@ -695,7 +706,20 @@ function toggleT() {
 function next() {
   if (synth) { synth.cancel(); clearHi(); }
   if (!pool.length) { document.getElementById("sent").textContent = "此條件下沒有句子"; return; }
-  showSent(pick());
+  const item = pick();
+  historyIdx++;
+  history = history.slice(0, historyIdx);
+  history.push(item);
+  showSent(item);
+  document.getElementById("prevbtn").disabled = historyIdx <= 0;
+}
+
+function prev() {
+  if (historyIdx <= 0) return;
+  if (synth) { synth.cancel(); clearHi(); }
+  historyIdx--;
+  showSent(history[historyIdx]);
+  document.getElementById("prevbtn").disabled = historyIdx <= 0;
 }
 
 function utter(txt, cb) {

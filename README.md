@@ -1,58 +1,39 @@
-# 宇宙歷史時間軸 · Cosmic Timeline
+# English Practice
 
-🌐 **線上版本**：https://axylee.github.io/cosmic-timeline/
+英文句子練習工具，支援朗讀、逐字練習，可安裝至手機主畫面離線使用。
 
-## 使用方式
-- **滾輪**：縮放（以滑鼠位置為中心）
-- **拖曳**：上下左右平移
-- **點擊 pill 左側**：展開子事件
-- **點擊 pill 右側 ℹ**：開啟詳細 Popup
-- **點擊圖例**：切換軸線顯示/隱藏
-- **底部快跳按鈕**：跳到特定時代
+## 🔗 連結
 
-## 維護工具
+👉 **https://axylee.github.io/english_practice/**
 
-### 圖片批量更新工具
-`tools/update-images.html` — 在瀏覽器直接開啟，自動從 Wikipedia API 抓取所有事件的圖片 URL，下載更新後的 events.json。
+## 版本
 
-使用流程：
-1. 開啟 `tools/update-images.html`
-2. 點「從 URL 載入」載入最新 events.json
-3. 點「▶ 開始更新圖片」
-4. 下載更新後的 JSON → 上傳到 `data/events.json`
+| 版本 | 適合對象 | 句數 |
+|------|----------|------|
+| V1 基礎版 | 小學五年級 ─ 國中三年級 | 160 句 |
+| V2 進階版 | 國中三年級 ─ 高中三年級 | 160 句 |
+
+## 功能
+
+- 整句朗讀 / 逐字朗讀
+- 上一句 / 下一句切換
+- 點單字可單獨朗讀
+- 難度與主題篩選
+- 中文對照顯示
+- 可安裝至手機主畫面（PWA）
+- 離線可用
+
+## 安裝到手機
+
+**iPhone / iPad**：用 Safari 開啟連結 → 點底部分享圖示 → 加入主畫面
+
+**Android**：用 Chrome 開啟連結 → 點「安裝」提示 → 新增至主畫面
 
 ## 檔案結構
-```
-cosmic-timeline/
-├── index.html              ← 主程式
-├── data/
-│   └── events.json         ← 事件資料（可自行增減）
-├── tools/
-│   └── update-images.html  ← 圖片批量更新工具
-├── images/                 ← 本地圖片（可選）
-└── README.md
-```
 
-## 新增事件
-在 `data/events.json` 新增一筆，只需設定：
-```json
-{
-  "id": "唯一識別碼",
-  "year": -221,
-  "zh": "秦朝統一",
-  "en": "Qin Unification",
-  "axis": "china",
-  "level": 1,
-  "desc_zh": "中文描述",
-  "desc_en": "English description",
-  "wiki_zh": "https://zh.wikipedia.org/wiki/秦朝",
-  "wiki_en": "https://en.wikipedia.org/wiki/Qin_dynasty"
-}
 ```
-`image` 欄位不用手動填，用圖片更新工具自動從 Wikipedia 抓取即可。
-
-如有 `endYear` 欄位，事件會顯示為時期 pill（可展開）；否則顯示為圓點。  
-子事件只需時間範圍**嚴格落在父事件內**，系統自動建立父子關係。
-
-## GitHub Pages 部署
-repo → Settings → Pages → Source: main branch → 儲存
+english_practice/
+├── index.html                    ← 導覽首頁
+├── english-practice-pwa-v1.html  ← 基礎版（小5 ─ 國3）
+└── english-practice-pwa-v2.html  ← 進階版（國3 ─ 高3）
+```
