@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="英文進階">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0e1420">
-<title>English Practice+</title>
+<title>English / German Practice+</title>
 
 <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22English%20Practice%2B%22%2C%22short_name%22%3A%22英文進階%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230e1420%22%2C%22theme_color%22%3A%22%230e1420%22%2C%22orientation%22%3A%22portrait%22%7D">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230e1420'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle' fill='%235b8dee'%3E英%3C/text%3E%3C/svg%3E">
@@ -41,7 +41,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', 'Noto Sans TC', sans-serif;
-  padding: calc(var(--safe-top) + 16px) 14px calc(var(--safe-bottom) + 24px);
+  padding: calc(var(--safe-top) + 10px) 14px calc(var(--safe-bottom) + 14px);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -50,25 +50,35 @@ body {
 
 .header {
   text-align: center;
-  margin-bottom: 16px;
-  padding-bottom: 14px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--border);
 }
 .header h1 {
   font-family: 'JetBrains Mono', monospace;
   font-size: clamp(16px, 4vw, 20px);
   font-weight: 600;
-  color: var(--accent);
+  color: var(--muted);
   letter-spacing: 0.05em;
 }
 .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.lt {
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.15s;
+  padding: 2px 2px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.lt.active { color: var(--accent); }
+.lt:hover { color: var(--accent2); }
 
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
 }
 .panel-title {
   font-family: 'JetBrains Mono', monospace;
@@ -76,8 +86,8 @@ body {
   color: var(--accent);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -127,7 +137,7 @@ body {
   color: var(--text);
   text-align: center;
   line-height: 1.7;
-  min-height: 60px;
+  height: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,7 +173,8 @@ body {
   text-align: center;
   margin-top: 10px;
   line-height: 1.6;
-  display: none;
+  min-height: 26px;
+  visibility: hidden;
 }
 .ttbtn {
   display: block;
@@ -184,8 +195,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 12px 0 6px;
-  min-height: 84px;
+  padding: 6px 0 2px;
+  min-height: 60px;
 }
 
 .ctrl-row {
@@ -236,8 +247,8 @@ input[type=range] {
 
 .btn-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 .btn {
   height: 50px;
@@ -331,8 +342,7 @@ input[type=range] {
 }
 
 @media (max-width: 380px) {
-  .btn-grid { grid-template-columns: 1fr 1fr; }
-  .btn-next { grid-column: 1 / -1; }
+  .btn { font-size: 11px; padding: 0 2px; }
   .sentence-text { font-size: 14px; }
 }
 @media (min-width: 600px) {
@@ -354,8 +364,8 @@ input[type=range] {
   </div>
 
   <div class="header">
-    <h1>// ENGLISH PRACTICE+</h1>
-    <p>國3 ─ 高3 ｜ 160 句隨機練習</p>
+    <h1>// <span class="lt" data-lang="en">ENGLISH</span> / <span class="lt" data-lang="de">GERMAN</span> PRACTICE+</h1>
+    <p id="subt">國3 ─ 高3 ｜ 160 句隨機練習</p>
   </div>
 
   <div class="panel">
@@ -393,7 +403,6 @@ input[type=range] {
   </div>
 
   <div class="panel">
-    <div class="panel-title">語音設定</div>
     <div class="ctrl-row">
       <label>聲音</label>
       <select class="vsel" id="vsel"><option>載入中...</option></select>
@@ -403,14 +412,10 @@ input[type=range] {
       <input type="range" id="spd" min="0.5" max="1.5" step="0.1" value="0.9">
       <span class="sv" id="spdv">0.9x</span>
     </div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-title">播放控制</div>
-    <div class="btn-grid">
+    <div class="btn-grid" style="margin-top:10px;">
+      <button class="btn btn-prev" id="prevbtn" onclick="prev()" disabled>← 上一句</button>
       <button class="btn btn-speak" onclick="speakAll()">▶ 整句</button>
       <button class="btn btn-word" onclick="speakWBW()">▶ 逐字</button>
-      <button class="btn btn-prev" id="prevbtn" onclick="prev()" disabled>← 上一句</button>
       <button class="btn btn-next" onclick="next()">下一句 →</button>
     </div>
     <div class="hint">點句子中的單字可單獨朗讀</div>
@@ -452,180 +457,202 @@ const SVGS = {
   social: svg(`<circle cx='22' cy='22' r='8' fill='none' stroke='${C}' stroke-width='2'/><circle cx='56' cy='22' r='8' fill='none' stroke='${C}' stroke-width='2'/><circle cx='39' cy='50' r='8' fill='none' stroke='${C}' stroke-width='2'/><line x1='29' y1='26' x2='35' y2='44' stroke='${C}' stroke-width='1.5' stroke-linecap='round'/><line x1='49' y1='26' x2='43' y2='44' stroke='${C}' stroke-width='1.5' stroke-linecap='round'/><line x1='30' y1='22' x2='48' y2='22' stroke='${C}' stroke-width='1.5' stroke-linecap='round'/>`),
 };
 
-const BADGES = {
+const BADGES_EN = {
   "國3":{bg:"rgba(224,90,106,0.18)",c:"#e05a6a"},
   "高1":{bg:"rgba(160,122,224,0.18)",c:"#a07ae0"},
   "高2":{bg:"rgba(91,141,238,0.18)",c:"#5b8dee"},
   "高3":{bg:"rgba(78,203,138,0.18)",c:"#4ecb8a"},
 };
+const BADGES_DE = {
+  "B1":{bg:"rgba(160,122,224,0.18)",c:"#a07ae0"},
+  "B2":{bg:"rgba(78,203,138,0.18)",c:"#4ecb8a"},
+};
 
-const ALL = [
-  // ── 國3 (30句) ──
-  {en:"If it rains, I will stay home.",zh:"如果下雨，我會待在家裡。",p:"If + present, will + verb",lv:"國3",t:"daily",ic:"rain"},
-  {en:"She has never been abroad.",zh:"她從來沒有出過國。",p:"have never + pp",lv:"國3",t:"travel",ic:"plane"},
-  {en:"I wish I could fly.",zh:"我希望我能飛。",p:"I wish + S + could + verb",lv:"國3",t:"abstract",ic:"wish"},
-  {en:"He is too nervous to speak.",zh:"他緊張到說不出話來。",p:"too + adj. + to + verb",lv:"國3",t:"social",ic:"speech"},
-  {en:"The letter was written by her.",zh:"這封信是她寫的。",p:"was + pp + by (passive)",lv:"國3",t:"daily",ic:"write"},
-  {en:"She suggested that we leave early.",zh:"她建議我們早點離開。",p:"suggested + that-clause",lv:"國3",t:"social",ic:"speech"},
-  {en:"He asked me not to tell anyone.",zh:"他叫我不要告訴任何人。",p:"asked + O + not to + verb",lv:"國3",t:"social",ic:"question"},
-  {en:"I don't know who she is.",zh:"我不知道她是誰。",p:"don't know + wh-clause",lv:"國3",t:"daily",ic:"question"},
-  {en:"She made him apologize.",zh:"她讓他道歉。",p:"make + O + base verb",lv:"國3",t:"social",ic:"speech"},
-  {en:"English is spoken all over the world.",zh:"英語在全世界通用。",p:"is + pp (passive voice)",lv:"國3",t:"abstract",ic:"globe"},
-  {en:"If I were rich, I'd travel more.",zh:"如果我有錢，我會多旅行。",p:"If I were + adj., I'd + verb",lv:"國3",t:"travel",ic:"plane"},
-  {en:"He has studied abroad for a year.",zh:"他已在國外讀書一年了。",p:"has + pp + for + time",lv:"國3",t:"school",ic:"book"},
-  {en:"She told me that she was tired.",zh:"她告訴我她很累。",p:"told + O + that-clause",lv:"國3",t:"social",ic:"speech"},
-  {en:"The movie was directed by him.",zh:"這部電影是他執導的。",p:"was + pp + by (passive)",lv:"國3",t:"abstract",ic:"eye"},
-  {en:"I expected him to arrive on time.",zh:"我預期他會準時到達。",p:"expected + O + to + verb",lv:"國3",t:"daily",ic:"clock"},
-  {en:"We were told to be quiet.",zh:"我們被告知要保持安靜。",p:"were told + to + verb (passive)",lv:"國3",t:"school",ic:"speech"},
-  {en:"She wishes she had more friends.",zh:"她希望她有更多朋友。",p:"wishes + S + past subjunctive",lv:"國3",t:"social",ic:"person"},
-  {en:"He kept the door locked.",zh:"他讓門保持鎖著。",p:"kept + O + pp",lv:"國3",t:"daily",ic:"home"},
-  {en:"I wonder whether she will come.",zh:"我不確定她是否會來。",p:"wonder + whether-clause",lv:"國3",t:"social",ic:"question"},
-  {en:"The problem needs to be solved.",zh:"這個問題需要被解決。",p:"need + to be + pp",lv:"國3",t:"abstract",ic:"idea"},
-  {en:"Having finished his work, he left.",zh:"完成工作後，他離開了。",p:"Having + pp, S + verb",lv:"國3",t:"daily",ic:"run"},
-  {en:"She is known for her kindness.",zh:"她以善良著稱。",p:"is known for + noun",lv:"國3",t:"social",ic:"heart"},
-  {en:"Not knowing the answer, he was silent.",zh:"不知道答案，他保持沉默。",p:"Not + verb-ing, S + verb",lv:"國3",t:"school",ic:"question"},
-  {en:"The book was published last year.",zh:"這本書去年出版了。",p:"was + pp + time (passive)",lv:"國3",t:"abstract",ic:"write"},
-  {en:"She prefers reading to watching TV.",zh:"她比起看電視更喜歡看書。",p:"prefer + verb-ing + to + verb-ing",lv:"國3",t:"daily",ic:"book"},
-  {en:"He is said to be very talented.",zh:"據說他非常有才華。",p:"is said + to be (passive)",lv:"國3",t:"social",ic:"star"},
-  {en:"The bridge was built in 1980.",zh:"這座橋建於1980年。",p:"was + pp + in + year",lv:"國3",t:"abstract",ic:"building"},
-  {en:"I regret not studying harder.",zh:"我後悔沒有更努力念書。",p:"regret + not + verb-ing",lv:"國3",t:"school",ic:"book"},
-  {en:"She had the report finished by noon.",zh:"她讓報告在中午前完成了。",p:"had + O + pp",lv:"國3",t:"school",ic:"write"},
-  {en:"He seems to have forgotten it.",zh:"他似乎忘記了這件事。",p:"seem + to have + pp",lv:"國3",t:"daily",ic:"question"},
-  // ── 高1 (30句) ──
-  {en:"Not only did he fail, but he lied.",zh:"他不僅失敗了，還撒謊了。",p:"Not only did + S + verb, but...",lv:"高1",t:"social",ic:"speech"},
-  {en:"It is important that you be honest.",zh:"誠實對你來說非常重要。",p:"It is + adj. + that + S + be (subjunctive)",lv:"高1",t:"abstract",ic:"idea"},
-  {en:"The more you read, the wiser you become.",zh:"你讀得越多，你就越有智慧。",p:"The + comp., the + comp.",lv:"高1",t:"school",ic:"book"},
-  {en:"She would rather stay than leave.",zh:"她寧願留下也不願離開。",p:"would rather + verb + than + verb",lv:"高1",t:"daily",ic:"fork"},
-  {en:"Had I known, I would have helped.",zh:"如果我早知道，我就會幫忙了。",p:"Had + S + pp, would have + pp (inversion)",lv:"高1",t:"social",ic:"fork"},
-  {en:"No sooner had he left than it rained.",zh:"他一離開就下雨了。",p:"No sooner had + S + pp + than",lv:"高1",t:"nature",ic:"rain"},
-  {en:"It is not until midnight that she sleeps.",zh:"她要到午夜才睡覺。",p:"It is not until...that (cleft sentence)",lv:"高1",t:"daily",ic:"clock"},
-  {en:"So difficult was the test that he failed.",zh:"考試太難了，他沒有通過。",p:"So + adj. + was + S + that (inversion)",lv:"高1",t:"school",ic:"question"},
-  {en:"She is used to working under pressure.",zh:"她習慣了在壓力下工作。",p:"be used to + verb-ing",lv:"高1",t:"social",ic:"run"},
-  {en:"The data suggests that prices are rising.",zh:"數據顯示物價正在上漲。",p:"S + suggest + that-clause",lv:"高1",t:"abstract",ic:"scale"},
-  {en:"Scarcely had she arrived when he called.",zh:"她才剛到，他就打電話來了。",p:"Scarcely had + S + pp + when",lv:"高1",t:"daily",ic:"phone"},
-  {en:"He is regarded as the best candidate.",zh:"他被視為最佳候選人。",p:"is regarded as + noun",lv:"高1",t:"social",ic:"star"},
-  {en:"Whatever you decide, I will support you.",zh:"不管你決定什麼，我都支持你。",p:"Whatever + S + verb, S + verb",lv:"高1",t:"social",ic:"heart"},
-  {en:"The project was delayed due to the storm.",zh:"計畫因暴風雨而延誤了。",p:"was + pp + due to + noun",lv:"高1",t:"nature",ic:"rain"},
-  {en:"She finds it difficult to make decisions.",zh:"她覺得做決定很困難。",p:"find + it + adj. + to + verb",lv:"高1",t:"abstract",ic:"idea"},
-  {en:"Only then did I realize my mistake.",zh:"就在那時我才意識到我的錯誤。",p:"Only + adv. + did + S + verb (inversion)",lv:"高1",t:"abstract",ic:"eye"},
-  {en:"He is thought to be responsible.",zh:"他被認為是負責任的。",p:"is thought + to be + adj.",lv:"高1",t:"social",ic:"person"},
-  {en:"She devoted herself to helping others.",zh:"她致力於幫助他人。",p:"devote + oneself + to + verb-ing",lv:"高1",t:"social",ic:"heart"},
-  {en:"The law requires that all citizens vote.",zh:"法律要求所有公民投票。",p:"require + that + S + base verb",lv:"高1",t:"abstract",ic:"building"},
-  {en:"Were it not for your help, I'd fail.",zh:"若不是你的幫助，我就會失敗。",p:"Were it not for + noun (inversion)",lv:"高1",t:"social",ic:"fork"},
-  {en:"It was not until she spoke that I noticed.",zh:"直到她開口，我才注意到。",p:"It was not until...that",lv:"高1",t:"social",ic:"eye"},
-  {en:"She is committed to improving herself.",zh:"她致力於提升自己。",p:"be committed to + verb-ing",lv:"高1",t:"abstract",ic:"star"},
-  {en:"Hardly had he sat down when the phone rang.",zh:"他剛坐下，電話就響了。",p:"Hardly had + S + pp + when",lv:"高1",t:"daily",ic:"clock"},
-  {en:"The findings were considered groundbreaking.",zh:"這些發現被認為是突破性的。",p:"were + pp + adj. (passive)",lv:"高1",t:"science",ic:"science"},
-  {en:"He insisted that the rule be changed.",zh:"他堅持規則應該被更改。",p:"insist + that + S + base verb",lv:"高1",t:"abstract",ic:"speech"},
-  {en:"Never have I seen such a beautiful view.",zh:"我從來沒有見過如此美麗的景色。",p:"Never have + S + pp (inversion)",lv:"高1",t:"travel",ic:"eye"},
-  {en:"She managed to finish the project alone.",zh:"她設法獨自完成了這個計畫。",p:"manage + to + verb",lv:"高1",t:"school",ic:"star"},
-  {en:"The evidence points to his innocence.",zh:"證據指向他的清白。",p:"point to + noun",lv:"高1",t:"abstract",ic:"eye"},
-  {en:"It is vital that she attend the meeting.",zh:"她參加會議至關重要。",p:"It is vital + that + S + base verb",lv:"高1",t:"social",ic:"idea"},
-  {en:"He tends to overthink every situation.",zh:"他傾向於對每個情況想太多。",p:"tend + to + verb",lv:"高1",t:"abstract",ic:"question"},
-  // ── 高2 (50句) ──
-  {en:"The research confirms what we suspected.",zh:"研究證實了我們所懷疑的事。",p:"confirms + wh-clause",lv:"高2",t:"science",ic:"science"},
-  {en:"She attributes her success to hard work.",zh:"她將自己的成功歸因於努力。",p:"attribute + O + to + noun",lv:"高2",t:"abstract",ic:"star"},
-  {en:"It is widely believed that exercise helps.",zh:"人們普遍認為運動有益健康。",p:"It is widely believed + that-clause",lv:"高2",t:"science",ic:"idea"},
-  {en:"Not a word was said during the meeting.",zh:"會議期間沒有人說一句話。",p:"Not a + noun + was + pp (inversion)",lv:"高2",t:"social",ic:"speech"},
-  {en:"The phenomenon can be explained scientifically.",zh:"這個現象可以用科學來解釋。",p:"can be + pp + adv. (passive)",lv:"高2",t:"science",ic:"science"},
-  {en:"He would have succeeded had he tried harder.",zh:"如果他更努力，他本來會成功的。",p:"would have + pp + had + S + pp",lv:"高2",t:"school",ic:"fork"},
-  {en:"The policy aims to reduce carbon emissions.",zh:"這項政策旨在減少碳排放量。",p:"aim + to + verb + O",lv:"高2",t:"nature",ic:"globe"},
-  {en:"She struggled with the concept at first.",zh:"她一開始對這個概念感到困惑。",p:"struggle + with + noun + at first",lv:"高2",t:"school",ic:"book"},
-  {en:"The debate revolves around ethical issues.",zh:"這場辯論圍繞著倫理問題。",p:"revolve around + noun",lv:"高2",t:"abstract",ic:"question"},
-  {en:"Much remains to be done about climate change.",zh:"關於氣候變化，還有很多事要做。",p:"Much remains + to be + pp",lv:"高2",t:"nature",ic:"tree"},
-  {en:"He is reluctant to admit his mistakes.",zh:"他不願意承認自己的錯誤。",p:"be reluctant + to + verb",lv:"高2",t:"social",ic:"question"},
-  {en:"The results were far beyond expectations.",zh:"結果遠遠超出了預期。",p:"were + far beyond + noun",lv:"高2",t:"abstract",ic:"star"},
-  {en:"She has a tendency to avoid conflict.",zh:"她有迴避衝突的傾向。",p:"have a tendency + to + verb",lv:"高2",t:"social",ic:"fork"},
-  {en:"The invention transformed how people lived.",zh:"這項發明改變了人們的生活方式。",p:"transformed + wh-clause",lv:"高2",t:"science",ic:"tech"},
-  {en:"He came to realize the value of patience.",zh:"他漸漸意識到耐心的價值。",p:"came to + verb + noun phrase",lv:"高2",t:"abstract",ic:"idea"},
-  {en:"It goes without saying that honesty matters.",zh:"誠實的重要性不言而喻。",p:"It goes without saying + that-clause",lv:"高2",t:"abstract",ic:"speech"},
-  {en:"The findings challenge conventional wisdom.",zh:"這些發現挑戰了傳統觀念。",p:"challenge + noun",lv:"高2",t:"science",ic:"question"},
-  {en:"She was on the verge of giving up.",zh:"她幾乎要放棄了。",p:"be on the verge of + verb-ing",lv:"高2",t:"abstract",ic:"fork"},
-  {en:"The ecosystem is under severe threat.",zh:"這個生態系統面臨嚴峻的威脅。",p:"be under + noun",lv:"高2",t:"nature",ic:"tree"},
-  {en:"He took it for granted that she would come.",zh:"他理所當然地認為她會來。",p:"take it for granted + that-clause",lv:"高2",t:"social",ic:"person"},
-  {en:"The solution lies in better communication.",zh:"解決之道在於更好的溝通。",p:"lie in + noun",lv:"高2",t:"social",ic:"link"},
-  {en:"She made a compelling argument for change.",zh:"她為改變提出了令人信服的論點。",p:"make + adj. + noun + for + noun",lv:"高2",t:"abstract",ic:"speech"},
-  {en:"The gap between rich and poor is widening.",zh:"貧富差距正在擴大。",p:"S + is + verb-ing (present cont.)",lv:"高2",t:"social",ic:"scale"},
-  {en:"He was in no position to judge others.",zh:"他沒有資格評斷他人。",p:"be in no position + to + verb",lv:"高2",t:"abstract",ic:"scale"},
-  {en:"The technology has the potential to save lives.",zh:"這項技術有拯救生命的潛力。",p:"have the potential + to + verb",lv:"高2",t:"science",ic:"tech"},
-  {en:"She drew inspiration from her surroundings.",zh:"她從周圍環境中汲取靈感。",p:"draw inspiration from + noun",lv:"高2",t:"abstract",ic:"idea"},
-  {en:"The committee voted to postpone the event.",zh:"委員會投票決定延後活動。",p:"voted + to + verb + O",lv:"高2",t:"social",ic:"building"},
-  {en:"His actions speak louder than his words.",zh:"他的行動比言語更有力。",p:"S + verb + adj. + than + noun",lv:"高2",t:"abstract",ic:"speech"},
-  {en:"She is deeply committed to social justice.",zh:"她深深致力於社會正義。",p:"be deeply committed to + noun",lv:"高2",t:"social",ic:"heart"},
-  {en:"The virus spread rapidly across borders.",zh:"病毒迅速地跨越邊境蔓延。",p:"spread + adv. + across + noun",lv:"高2",t:"science",ic:"globe"},
-  {en:"He found himself unable to concentrate.",zh:"他發現自己無法集中注意力。",p:"find + oneself + adj. + to + verb",lv:"高2",t:"school",ic:"eye"},
-  {en:"The award recognizes outstanding contributions.",zh:"這個獎項表彰傑出的貢獻。",p:"recognize + adj. + noun",lv:"高2",t:"social",ic:"star"},
-  {en:"She was at a loss for what to say.",zh:"她不知道該說什麼。",p:"be at a loss + for + wh-clause",lv:"高2",t:"social",ic:"question"},
-  {en:"The issue has long been overlooked.",zh:"這個問題長期以來被忽視了。",p:"has long been + pp",lv:"高2",t:"abstract",ic:"eye"},
-  {en:"He felt compelled to speak out.",zh:"他覺得不得不說出來。",p:"feel compelled + to + verb",lv:"高2",t:"social",ic:"speech"},
-  {en:"The data fails to support the hypothesis.",zh:"數據無法支持這個假說。",p:"fail + to + verb + O",lv:"高2",t:"science",ic:"science"},
-  {en:"She set out to prove everyone wrong.",zh:"她著手證明大家都是錯的。",p:"set out + to + verb + O",lv:"高2",t:"abstract",ic:"run"},
-  {en:"The economy rebounded faster than expected.",zh:"經濟復甦速度比預期更快。",p:"rebounded + adv. + than + pp",lv:"高2",t:"abstract",ic:"scale"},
-  {en:"He hesitated before making a decision.",zh:"他在做決定之前猶豫了。",p:"hesitate + before + verb-ing",lv:"高2",t:"abstract",ic:"fork"},
-  {en:"She has a gift for learning languages.",zh:"她有學習語言的天賦。",p:"have a gift for + noun/verb-ing",lv:"高2",t:"school",ic:"music"},
-  {en:"The report shed light on the hidden risks.",zh:"報告揭示了隱藏的風險。",p:"shed light on + noun",lv:"高2",t:"abstract",ic:"idea"},
-  {en:"He was brought up to respect his elders.",zh:"他從小被教導要尊重長輩。",p:"was brought up + to + verb",lv:"高2",t:"social",ic:"person"},
-  {en:"The strategy proved to be highly effective.",zh:"這個策略被證明非常有效。",p:"proved + to be + adv. + adj.",lv:"高2",t:"abstract",ic:"star"},
-  {en:"She poured her heart into the project.",zh:"她全心全意投入這個計畫。",p:"pour one's heart into + noun",lv:"高2",t:"abstract",ic:"heart"},
-  {en:"The situation calls for immediate action.",zh:"這種情況需要立即採取行動。",p:"call for + noun",lv:"高2",t:"abstract",ic:"speech"},
-  {en:"He was reluctant to let go of the past.",zh:"他不願意放下過去。",p:"reluctant + to + verb + O",lv:"高2",t:"abstract",ic:"clock"},
-  {en:"The study reveals a strong correlation.",zh:"研究揭示了一個強烈的相關性。",p:"reveal + noun phrase",lv:"高2",t:"science",ic:"science"},
-  {en:"She made it a point to stay informed.",zh:"她特別注重隨時掌握最新資訊。",p:"make it a point + to + verb",lv:"高2",t:"abstract",ic:"eye"},
-  {en:"He tends to see the best in people.",zh:"他傾向於看到別人好的一面。",p:"tend + to + verb + O",lv:"高2",t:"social",ic:"heart"},
-  {en:"The conference was held to address global issues.",zh:"這場會議是為了解決全球問題而舉行的。",p:"was held + to + verb + O (passive)",lv:"高2",t:"social",ic:"globe"},
-  // ── 高3 (50句) ──
-  {en:"The extent to which we succeed depends on effort.",zh:"我們成功的程度取決於努力。",p:"The extent to which + clause",lv:"高3",t:"abstract",ic:"scale"},
-  {en:"She is well aware of the consequences.",zh:"她完全清楚後果。",p:"be well aware of + noun",lv:"高3",t:"abstract",ic:"eye"},
-  {en:"It is not so much talent as perseverance.",zh:"與其說是天賦，不如說是毅力。",p:"not so much A as B",lv:"高3",t:"abstract",ic:"scale"},
-  {en:"The argument hinges on a single assumption.",zh:"這個論點取決於一個單一的假設。",p:"hinge on + noun",lv:"高3",t:"abstract",ic:"question"},
-  {en:"He was absorbed in thought when she arrived.",zh:"她到達時，他正陷入沉思。",p:"be absorbed in + noun + when-clause",lv:"高3",t:"daily",ic:"idea"},
-  {en:"The implications of the study are far-reaching.",zh:"這項研究的影響深遠。",p:"S + be + adj. (describing noun phrase)",lv:"高3",t:"science",ic:"globe"},
-  {en:"She struggled to reconcile her values with reality.",zh:"她努力調和自己的價值觀與現實。",p:"struggle + to + verb + O + with + noun",lv:"高3",t:"abstract",ic:"scale"},
-  {en:"It is through failure that we learn the most.",zh:"正是透過失敗，我們才學到最多。",p:"It is through + noun + that (cleft)",lv:"高3",t:"abstract",ic:"idea"},
-  {en:"His eloquence won the audience over.",zh:"他的口才征服了觀眾。",p:"S + won + O + over",lv:"高3",t:"social",ic:"speech"},
-  {en:"The paradox lies in its apparent simplicity.",zh:"悖論在於其表面上的簡單性。",p:"lie in + noun phrase",lv:"高3",t:"abstract",ic:"question"},
-  {en:"She was compelled by circumstances to act.",zh:"她迫於情勢不得不採取行動。",p:"was compelled by + noun + to + verb",lv:"高3",t:"abstract",ic:"fork"},
-  {en:"The proposal met with considerable opposition.",zh:"這個提案遭到了相當大的反對。",p:"meet with + noun",lv:"高3",t:"social",ic:"speech"},
-  {en:"He was at the forefront of the movement.",zh:"他站在這場運動的最前線。",p:"be at the forefront of + noun",lv:"高3",t:"social",ic:"run"},
-  {en:"The evidence is largely circumstantial.",zh:"這些證據大多是間接的。",p:"S + be + adv. + adj.",lv:"高3",t:"abstract",ic:"eye"},
-  {en:"She challenged the notion that success is linear.",zh:"她挑戰了成功是線性的這個觀念。",p:"challenge + noun + that-clause",lv:"高3",t:"abstract",ic:"question"},
-  {en:"Not once did he consider giving up.",zh:"他從來沒有考慮過放棄。",p:"Not once + did + S + verb (inversion)",lv:"高3",t:"abstract",ic:"star"},
-  {en:"The policy has unintended consequences.",zh:"這項政策產生了意想不到的後果。",p:"have + adj. + noun",lv:"高3",t:"abstract",ic:"fork"},
-  {en:"She attributed the failure to poor planning.",zh:"她將失敗歸因於計劃不周。",p:"attribute + O + to + noun",lv:"高3",t:"abstract",ic:"scale"},
-  {en:"The framework provides a basis for analysis.",zh:"這個框架為分析提供了基礎。",p:"provide + O + for + noun",lv:"高3",t:"abstract",ic:"building"},
-  {en:"He was in a dilemma about what to choose.",zh:"他對於選擇什麼感到左右為難。",p:"be in a dilemma about + wh-clause",lv:"高3",t:"abstract",ic:"fork"},
-  {en:"The correlation does not imply causation.",zh:"相關性並不意味著因果關係。",p:"S + does not + verb + O",lv:"高3",t:"science",ic:"link"},
-  {en:"She was torn between ambition and contentment.",zh:"她在野心與滿足感之間感到矛盾。",p:"be torn between + noun + and + noun",lv:"高3",t:"abstract",ic:"fork"},
-  {en:"The discourse surrounding identity is complex.",zh:"關於身份認同的論述是複雜的。",p:"The discourse surrounding + noun + is + adj.",lv:"高3",t:"abstract",ic:"speech"},
-  {en:"He remained steadfast in his convictions.",zh:"他在自己的信念上保持堅定。",p:"remain + adj. + in + noun",lv:"高3",t:"abstract",ic:"star"},
-  {en:"She is well-versed in classical literature.",zh:"她對古典文學非常熟悉。",p:"be well-versed in + noun",lv:"高3",t:"school",ic:"book"},
-  {en:"The outcome hinges on political will.",zh:"結果取決於政治意願。",p:"hinge on + noun",lv:"高3",t:"abstract",ic:"building"},
-  {en:"He came to terms with his limitations.",zh:"他接受了自己的局限性。",p:"come to terms with + noun",lv:"高3",t:"abstract",ic:"scale"},
-  {en:"The breakthrough came after years of failure.",zh:"這一突破是在多年失敗後取得的。",p:"S + came + after + time phrase",lv:"高3",t:"science",ic:"science"},
-  {en:"She challenged the assumptions underlying the theory.",zh:"她挑戰了這個理論背後的假設。",p:"challenge + noun + underlying + noun",lv:"高3",t:"science",ic:"question"},
-  {en:"He is acutely aware of his privilege.",zh:"他對自己的特權有深刻的認識。",p:"be acutely aware of + noun",lv:"高3",t:"social",ic:"eye"},
-  {en:"The analogy fails to capture the complexity.",zh:"這個類比無法捕捉其複雜性。",p:"fail + to + verb + O",lv:"高3",t:"abstract",ic:"scale"},
-  {en:"She stood by her decision despite criticism.",zh:"儘管受到批評，她仍堅持自己的決定。",p:"stand by + O + despite + noun",lv:"高3",t:"abstract",ic:"star"},
-  {en:"The tension between freedom and security persists.",zh:"自由與安全之間的張力持續存在。",p:"tension between + noun + and + noun + persists",lv:"高3",t:"abstract",ic:"scale"},
-  {en:"He was deeply influenced by existentialist thought.",zh:"他深受存在主義思想的影響。",p:"was deeply influenced by + noun",lv:"高3",t:"abstract",ic:"idea"},
-  {en:"The narrative shifts depending on perspective.",zh:"敘事視角因觀點不同而改變。",p:"shift depending on + noun",lv:"高3",t:"abstract",ic:"eye"},
-  {en:"She grappled with the ethical implications.",zh:"她努力應對其中的倫理問題。",p:"grapple with + noun",lv:"高3",t:"abstract",ic:"question"},
-  {en:"The innovation disrupted the entire industry.",zh:"這項創新顛覆了整個行業。",p:"disrupt + O",lv:"高3",t:"science",ic:"tech"},
-  {en:"He placed too much emphasis on perfection.",zh:"他對完美太過執著。",p:"place too much emphasis on + noun",lv:"高3",t:"abstract",ic:"scale"},
-  {en:"She was driven by a relentless pursuit of truth.",zh:"她被對真理的不懈追求所驅動。",p:"be driven by + noun phrase",lv:"高3",t:"abstract",ic:"run"},
-  {en:"The lack of transparency undermines public trust.",zh:"缺乏透明度會破壞公眾信任。",p:"S + undermines + O",lv:"高3",t:"social",ic:"building"},
-  {en:"He questioned the validity of the data.",zh:"他質疑數據的有效性。",p:"question + noun phrase",lv:"高3",t:"science",ic:"question"},
-  {en:"The reform was met with widespread resistance.",zh:"這項改革遭到了廣泛的抵制。",p:"was met with + adj. + noun (passive)",lv:"高3",t:"social",ic:"building"},
-  {en:"She articulated her position with great clarity.",zh:"她以極清晰的方式表達了自己的立場。",p:"articulate + O + with + noun",lv:"高3",t:"abstract",ic:"speech"},
-  {en:"The disparity in income reflects structural inequality.",zh:"收入差距反映了結構性不平等。",p:"reflect + noun phrase",lv:"高3",t:"social",ic:"scale"},
-  {en:"He is prone to making hasty judgments.",zh:"他容易做出倉促的判斷。",p:"be prone to + verb-ing",lv:"高3",t:"abstract",ic:"question"},
-  {en:"The philosopher argued that morality is subjective.",zh:"這位哲學家主張道德是主觀的。",p:"argue + that-clause",lv:"高3",t:"abstract",ic:"idea"},
-  {en:"She demonstrated remarkable resilience under pressure.",zh:"她在壓力下展現了卓越的韌性。",p:"demonstrate + adj. + noun + under + noun",lv:"高3",t:"abstract",ic:"star"},
-  {en:"The paradox challenges our intuitive understanding.",zh:"這個悖論挑戰了我們直覺的理解。",p:"challenge + possessive + adj. + noun",lv:"高3",t:"abstract",ic:"question"},
-  {en:"He was haunted by a sense of inadequacy.",zh:"他被一種不足感所困擾。",p:"be haunted by + noun phrase",lv:"高3",t:"abstract",ic:"question"},
-  {en:"She brought a fresh perspective to the debate.",zh:"她為這場辯論帶來了新的視角。",p:"bring + O + to + noun",lv:"高3",t:"abstract",ic:"eye"},
-  {en:"The crisis exposed deep-seated systemic flaws.",zh:"這場危機暴露了根深蒂固的系統性缺陷。",p:"expose + adj. + adj. + noun",lv:"高3",t:"abstract",ic:"building"},
+const LEVELS = {
+  en: [["all","全部難度"],["國3","國中三年級"],["高1","高中一年級"],["高2","高中二年級"],["高3","高中三年級"]],
+  de: [["all","全部難度"],["B1","B1 中級"],["B2","B2 中高級"]],
+};
+const SUBTITLES = {
+  en: "國3 ─ 高3 ｜ 161 句中德對照",
+  de: "B1 ─ B2 ｜ 161 句中德對照",
+};
+
+// ── Sentence bank (161 paired EN+DE+ZH) ──
+const SENTENCES = [
+  // ── 國3 → B1 (30句) ──
+  {en:"If it rains, I will stay home.",de:"Wenn es regnet, bleibe ich zu Hause.",zh:"如果下雨，我會待在家裡。",p_en:"If + present, will + verb",p_de:"Wenn + Nebensatz, Hauptsatz",lv_en:"國3",lv_de:"B1",t:"daily",ic:"rain"},
+  {en:"She has never been abroad.",de:"Sie war noch nie im Ausland.",zh:"她從來沒有出過國。",p_en:"have never + pp",p_de:"Präteritum: war noch nie",lv_en:"國3",lv_de:"B1",t:"travel",ic:"plane"},
+  {en:"I wish I could fly.",de:"Ich wünschte, ich könnte fliegen.",zh:"我希望我能飛。",p_en:"I wish + S + could + verb",p_de:"Konjunktiv II: könnte",lv_en:"國3",lv_de:"B1",t:"abstract",ic:"wish"},
+  {en:"He is too nervous to speak.",de:"Er ist zu nervös, um zu sprechen.",zh:"他緊張到說不出話來。",p_en:"too + adj. + to + verb",p_de:"zu + Adj. + um zu + Inf.",lv_en:"國3",lv_de:"B1",t:"social",ic:"speech"},
+  {en:"The letter was written by her.",de:"Der Brief wurde von ihr geschrieben.",zh:"這封信是她寫的。",p_en:"was + pp + by (passive)",p_de:"Passiv: wurde + von + Partizip",lv_en:"國3",lv_de:"B1",t:"daily",ic:"write"},
+  {en:"She suggested that we leave early.",de:"Sie schlug vor, dass wir früh gehen.",zh:"她建議我們早點離開。",p_en:"suggested + that-clause",p_de:"vorschlagen, dass",lv_en:"國3",lv_de:"B1",t:"social",ic:"speech"},
+  {en:"He asked me not to tell anyone.",de:"Er bat mich, niemandem etwas zu sagen.",zh:"他叫我不要告訴任何人。",p_en:"asked + O + not to + verb",p_de:"bitten + zu + Inf.",lv_en:"國3",lv_de:"B1",t:"social",ic:"question"},
+  {en:"I don't know who she is.",de:"Ich weiß nicht, wer sie ist.",zh:"我不知道她是誰。",p_en:"don't know + wh-clause",p_de:"wissen + wer-Nebensatz",lv_en:"國3",lv_de:"B1",t:"daily",ic:"question"},
+  {en:"She made him apologize.",de:"Sie zwang ihn, sich zu entschuldigen.",zh:"她讓他道歉。",p_en:"make + O + base verb",p_de:"zwingen + Akk. + zu + Inf.",lv_en:"國3",lv_de:"B1",t:"social",ic:"speech"},
+  {en:"English is spoken all over the world.",de:"Englisch wird auf der ganzen Welt gesprochen.",zh:"英語在全世界通用。",p_en:"is + pp (passive voice)",p_de:"Passiv: wird + Partizip",lv_en:"國3",lv_de:"B1",t:"abstract",ic:"globe"},
+  {en:"If I were rich, I'd travel more.",de:"Wenn ich reich wäre, würde ich mehr reisen.",zh:"如果我有錢，我會多旅行。",p_en:"If I were + adj., I'd + verb",p_de:"Konj. II: wäre / würde",lv_en:"國3",lv_de:"B1",t:"travel",ic:"plane"},
+  {en:"He has studied abroad for a year.",de:"Er studiert seit einem Jahr im Ausland.",zh:"他已在國外讀書一年了。",p_en:"has + pp + for + time",p_de:"Präsens + seit + Dat.",lv_en:"國3",lv_de:"B1",t:"school",ic:"book"},
+  {en:"She told me that she was tired.",de:"Sie sagte mir, dass sie müde sei.",zh:"她告訴我她很累。",p_en:"told + O + that-clause",p_de:"Konjunktiv I: sei",lv_en:"國3",lv_de:"B1",t:"social",ic:"speech"},
+  {en:"The movie was directed by him.",de:"Der Film wurde von ihm gedreht.",zh:"這部電影是他執導的。",p_en:"was + pp + by (passive)",p_de:"Passiv: wurde + von",lv_en:"國3",lv_de:"B1",t:"abstract",ic:"eye"},
+  {en:"I expected him to arrive on time.",de:"Ich erwartete, dass er pünktlich ankommt.",zh:"我預期他會準時到達。",p_en:"expected + O + to + verb",p_de:"erwarten, dass",lv_en:"國3",lv_de:"B1",t:"daily",ic:"clock"},
+  {en:"We were told to be quiet.",de:"Uns wurde gesagt, leise zu sein.",zh:"我們被告知要保持安靜。",p_en:"were told + to + verb (passive)",p_de:"Passiv + zu + Inf.",lv_en:"國3",lv_de:"B1",t:"school",ic:"speech"},
+  {en:"She wishes she had more friends.",de:"Sie wünschte, sie hätte mehr Freunde.",zh:"她希望她有更多朋友。",p_en:"wishes + S + past subjunctive",p_de:"Konjunktiv II: hätte",lv_en:"國3",lv_de:"B1",t:"social",ic:"person"},
+  {en:"He kept the door locked.",de:"Er hielt die Tür verschlossen.",zh:"他讓門保持鎖著。",p_en:"kept + O + pp",p_de:"halten + Akk. + Partizip",lv_en:"國3",lv_de:"B1",t:"daily",ic:"home"},
+  {en:"I wonder whether she will come.",de:"Ich frage mich, ob sie kommt.",zh:"我不確定她是否會來。",p_en:"wonder + whether-clause",p_de:"sich fragen + ob-Nebensatz",lv_en:"國3",lv_de:"B1",t:"social",ic:"question"},
+  {en:"The problem needs to be solved.",de:"Das Problem muss gelöst werden.",zh:"這個問題需要被解決。",p_en:"need + to be + pp",p_de:"müssen + Partizip + werden",lv_en:"國3",lv_de:"B1",t:"abstract",ic:"idea"},
+  {en:"Having finished his work, he left.",de:"Nachdem er seine Arbeit beendet hatte, ging er.",zh:"完成工作後，他離開了。",p_en:"Having + pp, S + verb",p_de:"Nachdem + Plusquamperfekt",lv_en:"國3",lv_de:"B1",t:"daily",ic:"run"},
+  {en:"She is known for her kindness.",de:"Sie ist bekannt für ihre Freundlichkeit.",zh:"她以善良著稱。",p_en:"is known for + noun",p_de:"bekannt für + Akk.",lv_en:"國3",lv_de:"B1",t:"social",ic:"heart"},
+  {en:"Not knowing the answer, he was silent.",de:"Da er die Antwort nicht wusste, schwieg er.",zh:"不知道答案，他保持沉默。",p_en:"Not + verb-ing, S + verb",p_de:"Da + Nebensatz",lv_en:"國3",lv_de:"B1",t:"school",ic:"question"},
+  {en:"The book was published last year.",de:"Das Buch wurde letztes Jahr veröffentlicht.",zh:"這本書去年出版了。",p_en:"was + pp + time (passive)",p_de:"Passiv + Zeitangabe",lv_en:"國3",lv_de:"B1",t:"abstract",ic:"write"},
+  {en:"She prefers reading to watching TV.",de:"Sie liest lieber, als fernzusehen.",zh:"她比起看電視更喜歡看書。",p_en:"prefer + verb-ing + to + verb-ing",p_de:"lieber + als + zu + Inf.",lv_en:"國3",lv_de:"B1",t:"daily",ic:"book"},
+  {en:"He is said to be very talented.",de:"Man sagt, dass er sehr talentiert ist.",zh:"據說他非常有才華。",p_en:"is said + to be (passive)",p_de:"Man sagt, dass",lv_en:"國3",lv_de:"B1",t:"social",ic:"star"},
+  {en:"The bridge was built in 1980.",de:"Die Brücke wurde 1980 gebaut.",zh:"這座橋建於1980年。",p_en:"was + pp + in + year",p_de:"Passiv + Jahreszahl",lv_en:"國3",lv_de:"B1",t:"abstract",ic:"building"},
+  {en:"I regret not studying harder.",de:"Ich bereue, nicht mehr gelernt zu haben.",zh:"我後悔沒有更努力念書。",p_en:"regret + not + verb-ing",p_de:"bereuen + zu haben + Partizip",lv_en:"國3",lv_de:"B1",t:"school",ic:"book"},
+  {en:"She had the report finished by noon.",de:"Sie ließ den Bericht bis Mittag fertigstellen.",zh:"她讓報告在中午前完成了。",p_en:"had + O + pp",p_de:"lassen + Inf. (Kausativ)",lv_en:"國3",lv_de:"B1",t:"school",ic:"write"},
+  {en:"He seems to have forgotten it.",de:"Er scheint es vergessen zu haben.",zh:"他似乎忘記了這件事。",p_en:"seem + to have + pp",p_de:"scheinen + zu haben + Partizip",lv_en:"國3",lv_de:"B1",t:"daily",ic:"question"},
+  // ── 高1 → B1 (30句) ──
+  {en:"Not only did he fail, but he lied.",de:"Er ist nicht nur gescheitert, sondern hat auch gelogen.",zh:"他不僅失敗了，還撒謊了。",p_en:"Not only did + S + verb, but...",p_de:"nicht nur ... sondern auch",lv_en:"高1",lv_de:"B1",t:"social",ic:"speech"},
+  {en:"It is important that you be honest.",de:"Es ist wichtig, dass du ehrlich bist.",zh:"誠實對你來說非常重要。",p_en:"It is + adj. + that + S + be",p_de:"Es ist + Adj. + dass",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"idea"},
+  {en:"The more you read, the wiser you become.",de:"Je mehr du liest, desto klüger wirst du.",zh:"你讀得越多，你就越有智慧。",p_en:"The + comp., the + comp.",p_de:"je ... desto",lv_en:"高1",lv_de:"B1",t:"school",ic:"book"},
+  {en:"She would rather stay than leave.",de:"Sie würde lieber bleiben als gehen.",zh:"她寧願留下也不願離開。",p_en:"would rather + verb + than + verb",p_de:"würde lieber + als",lv_en:"高1",lv_de:"B1",t:"daily",ic:"fork"},
+  {en:"Had I known, I would have helped.",de:"Hätte ich es gewusst, hätte ich geholfen.",zh:"如果我早知道，我就會幫忙了。",p_en:"Had + S + pp, would have + pp",p_de:"Konj. II Vergangenheit (Inversion)",lv_en:"高1",lv_de:"B1",t:"social",ic:"fork"},
+  {en:"No sooner had he left than it rained.",de:"Kaum war er gegangen, als es zu regnen begann.",zh:"他一離開就下雨了。",p_en:"No sooner had + S + pp + than",p_de:"Kaum + als (Inversion)",lv_en:"高1",lv_de:"B1",t:"nature",ic:"rain"},
+  {en:"It is not until midnight that she sleeps.",de:"Erst um Mitternacht geht sie schlafen.",zh:"她要到午夜才睡覺。",p_en:"It is not until...that (cleft)",p_de:"Erst um + Zeit",lv_en:"高1",lv_de:"B1",t:"daily",ic:"clock"},
+  {en:"So difficult was the test that he failed.",de:"So schwierig war der Test, dass er durchfiel.",zh:"考試太難了，他沒有通過。",p_en:"So + adj. + was + S + that",p_de:"So + Adj. + dass",lv_en:"高1",lv_de:"B1",t:"school",ic:"question"},
+  {en:"She is used to working under pressure.",de:"Sie ist es gewohnt, unter Druck zu arbeiten.",zh:"她習慣了在壓力下工作。",p_en:"be used to + verb-ing",p_de:"es gewohnt sein + zu + Inf.",lv_en:"高1",lv_de:"B1",t:"social",ic:"run"},
+  {en:"The data suggests that prices are rising.",de:"Die Daten deuten darauf hin, dass die Preise steigen.",zh:"數據顯示物價正在上漲。",p_en:"S + suggest + that-clause",p_de:"darauf hindeuten, dass",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"scale"},
+  {en:"Scarcely had she arrived when he called.",de:"Kaum war sie angekommen, als er anrief.",zh:"她才剛到，他就打電話來了。",p_en:"Scarcely had + S + pp + when",p_de:"Kaum + als",lv_en:"高1",lv_de:"B1",t:"daily",ic:"phone"},
+  {en:"He is regarded as the best candidate.",de:"Er gilt als bester Kandidat.",zh:"他被視為最佳候選人。",p_en:"is regarded as + noun",p_de:"gelten als + Nom.",lv_en:"高1",lv_de:"B1",t:"social",ic:"star"},
+  {en:"Whatever you decide, I will support you.",de:"Was auch immer du entscheidest, ich unterstütze dich.",zh:"不管你決定什麼，我都支持你。",p_en:"Whatever + S + verb, S + verb",p_de:"Was auch immer + Nebensatz",lv_en:"高1",lv_de:"B1",t:"social",ic:"heart"},
+  {en:"The project was delayed due to the storm.",de:"Das Projekt wurde wegen des Sturms verzögert.",zh:"計畫因暴風雨而延誤了。",p_en:"was + pp + due to + noun",p_de:"Passiv + wegen + Gen.",lv_en:"高1",lv_de:"B1",t:"nature",ic:"rain"},
+  {en:"She finds it difficult to make decisions.",de:"Sie findet es schwierig, Entscheidungen zu treffen.",zh:"她覺得做決定很困難。",p_en:"find + it + adj. + to + verb",p_de:"finden + es + Adj. + zu + Inf.",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"idea"},
+  {en:"Only then did I realize my mistake.",de:"Erst dann erkannte ich meinen Fehler.",zh:"就在那時我才意識到我的錯誤。",p_en:"Only + adv. + did + S + verb",p_de:"Erst dann + Verb (Inversion)",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"eye"},
+  {en:"He is thought to be responsible.",de:"Man hält ihn für verantwortlich.",zh:"他被認為是負責任的。",p_en:"is thought + to be + adj.",p_de:"halten + Akk. + für + Adj.",lv_en:"高1",lv_de:"B1",t:"social",ic:"person"},
+  {en:"She devoted herself to helping others.",de:"Sie widmete sich dem Helfen anderer.",zh:"她致力於幫助他人。",p_en:"devote + oneself + to + verb-ing",p_de:"sich widmen + Dat.",lv_en:"高1",lv_de:"B1",t:"social",ic:"heart"},
+  {en:"The law requires that all citizens vote.",de:"Das Gesetz verlangt, dass alle Bürger wählen.",zh:"法律要求所有公民投票。",p_en:"require + that + S + base verb",p_de:"verlangen, dass",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"building"},
+  {en:"Were it not for your help, I'd fail.",de:"Ohne deine Hilfe würde ich scheitern.",zh:"若不是你的幫助，我就會失敗。",p_en:"Were it not for + noun",p_de:"Ohne + Akk., Konj. II",lv_en:"高1",lv_de:"B1",t:"social",ic:"fork"},
+  {en:"It was not until she spoke that I noticed.",de:"Erst als sie sprach, bemerkte ich es.",zh:"直到她開口，我才注意到。",p_en:"It was not until...that",p_de:"Erst als + Nebensatz",lv_en:"高1",lv_de:"B1",t:"social",ic:"eye"},
+  {en:"She is committed to improving herself.",de:"Sie ist entschlossen, sich zu verbessern.",zh:"她致力於提升自己。",p_en:"be committed to + verb-ing",p_de:"entschlossen sein + zu + Inf.",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"star"},
+  {en:"Hardly had he sat down when the phone rang.",de:"Kaum hatte er sich gesetzt, als das Telefon klingelte.",zh:"他剛坐下，電話就響了。",p_en:"Hardly had + S + pp + when",p_de:"Kaum + als",lv_en:"高1",lv_de:"B1",t:"daily",ic:"clock"},
+  {en:"The findings were considered groundbreaking.",de:"Die Ergebnisse galten als bahnbrechend.",zh:"這些發現被認為是突破性的。",p_en:"were + pp + adj. (passive)",p_de:"gelten als + Adj.",lv_en:"高1",lv_de:"B1",t:"nature",ic:"science"},
+  {en:"He insisted that the rule be changed.",de:"Er bestand darauf, dass die Regel geändert wird.",zh:"他堅持規則應該被更改。",p_en:"insist + that + S + base verb",p_de:"bestehen darauf, dass",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"speech"},
+  {en:"Never have I seen such a beautiful view.",de:"Nie habe ich eine so schöne Aussicht gesehen.",zh:"我從來沒有見過如此美麗的景色。",p_en:"Never have + S + pp (inversion)",p_de:"Nie + Inversion",lv_en:"高1",lv_de:"B1",t:"travel",ic:"eye"},
+  {en:"She managed to finish the project alone.",de:"Sie schaffte es, das Projekt allein zu beenden.",zh:"她設法獨自完成了這個計畫。",p_en:"manage + to + verb",p_de:"schaffen + zu + Inf.",lv_en:"高1",lv_de:"B1",t:"school",ic:"star"},
+  {en:"The evidence points to his innocence.",de:"Die Beweise deuten auf seine Unschuld hin.",zh:"證據指向他的清白。",p_en:"point to + noun",p_de:"hindeuten auf + Akk.",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"eye"},
+  {en:"It is vital that she attend the meeting.",de:"Es ist entscheidend, dass sie an der Sitzung teilnimmt.",zh:"她參加會議至關重要。",p_en:"It is vital + that + S + base verb",p_de:"entscheidend, dass",lv_en:"高1",lv_de:"B1",t:"social",ic:"idea"},
+  {en:"He tends to overthink every situation.",de:"Er neigt dazu, jede Situation zu zerdenken.",zh:"他傾向於對每個情況想太多。",p_en:"tend + to + verb",p_de:"neigen dazu + zu + Inf.",lv_en:"高1",lv_de:"B1",t:"abstract",ic:"question"},
+  // ── 高2 → B2 (50句) ──
+  {en:"The research confirms what we suspected.",de:"Die Forschung bestätigt, was wir vermutet haben.",zh:"研究證實了我們所懷疑的事。",p_en:"confirms + wh-clause",p_de:"bestätigen + was-Nebensatz",lv_en:"高2",lv_de:"B2",t:"nature",ic:"science"},
+  {en:"She attributes her success to hard work.",de:"Sie führt ihren Erfolg auf harte Arbeit zurück.",zh:"她將自己的成功歸因於努力。",p_en:"attribute + O + to + noun",p_de:"zurückführen auf + Akk.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"star"},
+  {en:"It is widely believed that exercise helps.",de:"Es wird allgemein angenommen, dass Sport hilft.",zh:"人們普遍認為運動有益健康。",p_en:"It is widely believed + that",p_de:"Es wird angenommen, dass",lv_en:"高2",lv_de:"B2",t:"nature",ic:"idea"},
+  {en:"Not a word was said during the meeting.",de:"Kein Wort wurde während der Sitzung gesagt.",zh:"會議期間沒有人說一句話。",p_en:"Not a + noun + was + pp",p_de:"Passiv + während + Gen.",lv_en:"高2",lv_de:"B2",t:"social",ic:"speech"},
+  {en:"The phenomenon can be explained scientifically.",de:"Das Phänomen lässt sich wissenschaftlich erklären.",zh:"這個現象可以用科學來解釋。",p_en:"can be + pp + adv. (passive)",p_de:"sich lassen + Inf. (Passiversatz)",lv_en:"高2",lv_de:"B2",t:"nature",ic:"science"},
+  {en:"He would have succeeded had he tried harder.",de:"Er hätte Erfolg gehabt, hätte er sich mehr angestrengt.",zh:"如果他更努力，他本來會成功的。",p_en:"would have + pp + had + S + pp",p_de:"Konj. II Vergangenheit (Inversion)",lv_en:"高2",lv_de:"B2",t:"school",ic:"fork"},
+  {en:"The policy aims to reduce carbon emissions.",de:"Die Politik zielt darauf ab, CO2-Emissionen zu reduzieren.",zh:"這項政策旨在減少碳排放量。",p_en:"aim + to + verb + O",p_de:"abzielen darauf + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"nature",ic:"globe"},
+  {en:"She struggled with the concept at first.",de:"Sie tat sich anfangs mit dem Konzept schwer.",zh:"她一開始對這個概念感到困惑。",p_en:"struggle + with + noun + at first",p_de:"sich schwertun mit + Dat.",lv_en:"高2",lv_de:"B2",t:"school",ic:"book"},
+  {en:"The debate revolves around ethical issues.",de:"Die Debatte dreht sich um ethische Fragen.",zh:"這場辯論圍繞著倫理問題。",p_en:"revolve around + noun",p_de:"sich drehen um + Akk.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"question"},
+  {en:"Much remains to be done about climate change.",de:"Es bleibt viel beim Klimawandel zu tun.",zh:"關於氣候變化，還有很多事要做。",p_en:"Much remains + to be + pp",p_de:"bleiben + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"nature",ic:"tree"},
+  {en:"He is reluctant to admit his mistakes.",de:"Er zögert, seine Fehler einzugestehen.",zh:"他不願意承認自己的錯誤。",p_en:"be reluctant + to + verb",p_de:"zögern + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"social",ic:"question"},
+  {en:"The results were far beyond expectations.",de:"Die Ergebnisse übertrafen die Erwartungen bei weitem.",zh:"結果遠遠超出了預期。",p_en:"were + far beyond + noun",p_de:"übertreffen + Akk. + bei weitem",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"star"},
+  {en:"She has a tendency to avoid conflict.",de:"Sie neigt dazu, Konflikten aus dem Weg zu gehen.",zh:"她有迴避衝突的傾向。",p_en:"have a tendency + to + verb",p_de:"neigen dazu + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"social",ic:"fork"},
+  {en:"The invention transformed how people lived.",de:"Die Erfindung veränderte, wie die Menschen lebten.",zh:"這項發明改變了人們的生活方式。",p_en:"transformed + wh-clause",p_de:"verändern + wie-Nebensatz",lv_en:"高2",lv_de:"B2",t:"nature",ic:"tech"},
+  {en:"He came to realize the value of patience.",de:"Er erkannte allmählich den Wert der Geduld.",zh:"他漸漸意識到耐心的價值。",p_en:"came to + verb + noun",p_de:"allmählich erkennen + Akk.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"idea"},
+  {en:"It goes without saying that honesty matters.",de:"Es versteht sich von selbst, dass Ehrlichkeit wichtig ist.",zh:"誠實的重要性不言而喻。",p_en:"It goes without saying + that",p_de:"sich von selbst verstehen + dass",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"speech"},
+  {en:"The findings challenge conventional wisdom.",de:"Die Ergebnisse stellen die herkömmliche Weisheit in Frage.",zh:"這些發現挑戰了傳統觀念。",p_en:"challenge + noun",p_de:"in Frage stellen + Akk.",lv_en:"高2",lv_de:"B2",t:"nature",ic:"question"},
+  {en:"She was on the verge of giving up.",de:"Sie war kurz davor aufzugeben.",zh:"她幾乎要放棄了。",p_en:"be on the verge of + verb-ing",p_de:"kurz davor + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"fork"},
+  {en:"The ecosystem is under severe threat.",de:"Das Ökosystem ist ernsthaft bedroht.",zh:"這個生態系統面臨嚴峻的威脅。",p_en:"be under + noun",p_de:"bedroht sein + Adv.",lv_en:"高2",lv_de:"B2",t:"nature",ic:"tree"},
+  {en:"He took it for granted that she would come.",de:"Er hielt es für selbstverständlich, dass sie kommt.",zh:"他理所當然地認為她會來。",p_en:"take it for granted + that",p_de:"für selbstverständlich halten + dass",lv_en:"高2",lv_de:"B2",t:"social",ic:"person"},
+  {en:"The solution lies in better communication.",de:"Die Lösung liegt in besserer Kommunikation.",zh:"解決之道在於更好的溝通。",p_en:"lie in + noun",p_de:"liegen in + Dat.",lv_en:"高2",lv_de:"B2",t:"social",ic:"link"},
+  {en:"She made a compelling argument for change.",de:"Sie brachte ein überzeugendes Argument für Veränderung vor.",zh:"她為改變提出了令人信服的論點。",p_en:"make + adj. + noun + for + noun",p_de:"vorbringen + Akk. + für + Akk.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"speech"},
+  {en:"The gap between rich and poor is widening.",de:"Die Kluft zwischen Arm und Reich wird größer.",zh:"貧富差距正在擴大。",p_en:"S + is + verb-ing",p_de:"werden + Komparativ",lv_en:"高2",lv_de:"B2",t:"social",ic:"scale"},
+  {en:"He was in no position to judge others.",de:"Er war nicht in der Lage, andere zu beurteilen.",zh:"他沒有資格評斷他人。",p_en:"be in no position + to + verb",p_de:"in der Lage sein + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"The technology has the potential to save lives.",de:"Die Technologie hat das Potenzial, Leben zu retten.",zh:"這項技術有拯救生命的潛力。",p_en:"have the potential + to + verb",p_de:"das Potenzial haben + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"nature",ic:"tech"},
+  {en:"She drew inspiration from her surroundings.",de:"Sie schöpfte Inspiration aus ihrer Umgebung.",zh:"她從周圍環境中汲取靈感。",p_en:"draw inspiration from + noun",p_de:"schöpfen aus + Dat.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"idea"},
+  {en:"The committee voted to postpone the event.",de:"Das Komitee stimmte dafür, die Veranstaltung zu verschieben.",zh:"委員會投票決定延後活動。",p_en:"vote + to + verb + O",p_de:"dafür stimmen + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"social",ic:"building"},
+  {en:"His actions speak louder than his words.",de:"Seine Taten sprechen lauter als seine Worte.",zh:"他的行動比言語更有力。",p_en:"S + verb + adj. + than + noun",p_de:"Komparativ + als",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"speech"},
+  {en:"She is deeply committed to social justice.",de:"Sie ist zutiefst der sozialen Gerechtigkeit verpflichtet.",zh:"她深深致力於社會正義。",p_en:"be deeply committed to + noun",p_de:"verpflichtet sein + Dat.",lv_en:"高2",lv_de:"B2",t:"social",ic:"heart"},
+  {en:"The virus spread rapidly across borders.",de:"Das Virus verbreitete sich schnell über die Grenzen hinweg.",zh:"病毒迅速地跨越邊境蔓延。",p_en:"spread + adv. + across + noun",p_de:"sich verbreiten über + Akk.",lv_en:"高2",lv_de:"B2",t:"nature",ic:"globe"},
+  {en:"He found himself unable to concentrate.",de:"Er stellte fest, dass er sich nicht konzentrieren konnte.",zh:"他發現自己無法集中注意力。",p_en:"find + oneself + adj. + to + verb",p_de:"feststellen, dass + Konj. II",lv_en:"高2",lv_de:"B2",t:"school",ic:"eye"},
+  {en:"The award recognizes outstanding contributions.",de:"Die Auszeichnung würdigt herausragende Beiträge.",zh:"這個獎項表彰傑出的貢獻。",p_en:"recognize + adj. + noun",p_de:"würdigen + Akk.",lv_en:"高2",lv_de:"B2",t:"social",ic:"star"},
+  {en:"She was at a loss for what to say.",de:"Sie war ratlos, was sie sagen sollte.",zh:"她不知道該說什麼。",p_en:"be at a loss + for + wh",p_de:"ratlos + Nebensatz",lv_en:"高2",lv_de:"B2",t:"social",ic:"question"},
+  {en:"The issue has long been overlooked.",de:"Das Problem wurde lange übersehen.",zh:"這個問題長期以來被忽視了。",p_en:"has long been + pp",p_de:"Passiv + lange",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"eye"},
+  {en:"He felt compelled to speak out.",de:"Er fühlte sich gezwungen, das Wort zu ergreifen.",zh:"他覺得不得不說出來。",p_en:"feel compelled + to + verb",p_de:"sich gezwungen fühlen + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"social",ic:"speech"},
+  {en:"The data fails to support the hypothesis.",de:"Die Daten stützen die Hypothese nicht.",zh:"數據無法支持這個假說。",p_en:"fail + to + verb + O",p_de:"stützen + Akk. + nicht",lv_en:"高2",lv_de:"B2",t:"nature",ic:"science"},
+  {en:"She set out to prove everyone wrong.",de:"Sie machte sich daran zu beweisen, dass alle falsch lagen.",zh:"她著手證明大家都是錯的。",p_en:"set out + to + verb + O",p_de:"sich daran machen + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"run"},
+  {en:"The economy rebounded faster than expected.",de:"Die Wirtschaft erholte sich schneller als erwartet.",zh:"經濟復甦速度比預期更快。",p_en:"rebound + adv. + than + pp",p_de:"sich erholen + Komparativ + als",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"He hesitated before making a decision.",de:"Er zögerte, bevor er eine Entscheidung traf.",zh:"他在做決定之前猶豫了。",p_en:"hesitate + before + verb-ing",p_de:"zögern + bevor",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"fork"},
+  {en:"She has a gift for learning languages.",de:"Sie hat eine Begabung für Sprachen.",zh:"她有學習語言的天賦。",p_en:"have a gift for + noun",p_de:"Begabung haben für + Akk.",lv_en:"高2",lv_de:"B2",t:"school",ic:"music"},
+  {en:"The report shed light on the hidden risks.",de:"Der Bericht warf Licht auf die verborgenen Risiken.",zh:"報告揭示了隱藏的風險。",p_en:"shed light on + noun",p_de:"Licht werfen auf + Akk.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"idea"},
+  {en:"He was brought up to respect his elders.",de:"Er wurde erzogen, ältere Menschen zu respektieren.",zh:"他從小被教導要尊重長輩。",p_en:"was brought up + to + verb",p_de:"Passiv + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"social",ic:"person"},
+  {en:"The strategy proved to be highly effective.",de:"Die Strategie erwies sich als äußerst wirksam.",zh:"這個策略被證明非常有效。",p_en:"prove + to be + adv. + adj.",p_de:"sich erweisen als + Nom.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"star"},
+  {en:"She poured her heart into the project.",de:"Sie steckte ihr ganzes Herz in das Projekt.",zh:"她全心全意投入這個計畫。",p_en:"pour one's heart into + noun",p_de:"stecken + Akk. + in + Akk.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"heart"},
+  {en:"The situation calls for immediate action.",de:"Die Situation erfordert sofortiges Handeln.",zh:"這種情況需要立即採取行動。",p_en:"call for + noun",p_de:"erfordern + Akk.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"speech"},
+  {en:"He was reluctant to let go of the past.",de:"Er zögerte, die Vergangenheit loszulassen.",zh:"他不願意放下過去。",p_en:"reluctant + to + verb + O",p_de:"zögern + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"clock"},
+  {en:"The study reveals a strong correlation.",de:"Die Studie offenbart eine starke Korrelation.",zh:"研究揭示了一個強烈的相關性。",p_en:"reveal + noun phrase",p_de:"offenbaren + Akk.",lv_en:"高2",lv_de:"B2",t:"nature",ic:"science"},
+  {en:"She made it a point to stay informed.",de:"Sie legte Wert darauf, informiert zu bleiben.",zh:"她特別注重隨時掌握最新資訊。",p_en:"make it a point + to + verb",p_de:"Wert legen darauf + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"abstract",ic:"eye"},
+  {en:"He tends to see the best in people.",de:"Er neigt dazu, das Beste in den Menschen zu sehen.",zh:"他傾向於看到別人好的一面。",p_en:"tend + to + verb",p_de:"neigen dazu + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"social",ic:"heart"},
+  {en:"The conference was held to address global issues.",de:"Die Konferenz wurde abgehalten, um globale Probleme anzugehen.",zh:"這場會議是為了解決全球問題而舉行的。",p_en:"was held + to + verb + O",p_de:"Passiv + um + zu + Inf.",lv_en:"高2",lv_de:"B2",t:"social",ic:"globe"},
+  // ── 高3 → B2 (51句) ──
+  {en:"The extent to which we succeed depends on effort.",de:"Das Ausmaß, in dem wir Erfolg haben, hängt von der Anstrengung ab.",zh:"我們成功的程度取決於努力。",p_en:"The extent to which + clause",p_de:"Relativsatz + abhängen von",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"She is well aware of the consequences.",de:"Sie ist sich der Konsequenzen voll bewusst.",zh:"她完全清楚後果。",p_en:"be well aware of + noun",p_de:"sich bewusst sein + Gen.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"eye"},
+  {en:"It is not so much talent as perseverance.",de:"Es ist nicht so sehr Talent als vielmehr Ausdauer.",zh:"與其說是天賦，不如說是毅力。",p_en:"not so much A as B",p_de:"nicht so sehr ... als vielmehr",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"The argument hinges on a single assumption.",de:"Das Argument hängt von einer einzigen Annahme ab.",zh:"這個論點取決於一個單一的假設。",p_en:"hinge on + noun",p_de:"abhängen von + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"question"},
+  {en:"He was absorbed in thought when she arrived.",de:"Er war in Gedanken vertieft, als sie ankam.",zh:"她到達時，他正陷入沉思。",p_en:"be absorbed in + noun + when",p_de:"vertieft sein in + Dat. + als",lv_en:"高3",lv_de:"B2",t:"daily",ic:"idea"},
+  {en:"The implications of the study are far-reaching.",de:"Die Auswirkungen der Studie sind weitreichend.",zh:"這項研究的影響深遠。",p_en:"S + be + adj.",p_de:"sein + weitreichend",lv_en:"高3",lv_de:"B2",t:"nature",ic:"globe"},
+  {en:"She struggled to reconcile her values with reality.",de:"Sie kämpfte damit, ihre Werte mit der Realität in Einklang zu bringen.",zh:"她努力調和自己的價值觀與現實。",p_en:"struggle + to + verb + with",p_de:"in Einklang bringen mit + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"It is through failure that we learn the most.",de:"Gerade durch Versagen lernen wir am meisten.",zh:"正是透過失敗，我們才學到最多。",p_en:"It is through + noun + that",p_de:"Gerade durch + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"idea"},
+  {en:"His eloquence won the audience over.",de:"Seine Beredsamkeit überzeugte das Publikum.",zh:"他的口才征服了觀眾。",p_en:"S + won + O + over",p_de:"überzeugen + Akk.",lv_en:"高3",lv_de:"B2",t:"social",ic:"speech"},
+  {en:"The paradox lies in its apparent simplicity.",de:"Das Paradoxon liegt in seiner scheinbaren Einfachheit.",zh:"悖論在於其表面上的簡單性。",p_en:"lie in + noun phrase",p_de:"liegen in + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"question"},
+  {en:"She was compelled by circumstances to act.",de:"Die Umstände zwangen sie zu handeln.",zh:"她迫於情勢不得不採取行動。",p_en:"was compelled by + noun + to",p_de:"zwingen + Akk. + zu + Inf.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"fork"},
+  {en:"The proposal met with considerable opposition.",de:"Der Vorschlag stieß auf erheblichen Widerstand.",zh:"這個提案遭到了相當大的反對。",p_en:"meet with + noun",p_de:"stoßen auf + Akk.",lv_en:"高3",lv_de:"B2",t:"social",ic:"speech"},
+  {en:"He was at the forefront of the movement.",de:"Er stand an vorderster Front der Bewegung.",zh:"他站在這場運動的最前線。",p_en:"be at the forefront of + noun",p_de:"an vorderster Front + Gen.",lv_en:"高3",lv_de:"B2",t:"social",ic:"run"},
+  {en:"The evidence is largely circumstantial.",de:"Die Beweise sind größtenteils indirekt.",zh:"這些證據大多是間接的。",p_en:"S + be + adv. + adj.",p_de:"sein + größtenteils + Adj.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"eye"},
+  {en:"She challenged the notion that success is linear.",de:"Sie stellte die Vorstellung in Frage, dass Erfolg linear sei.",zh:"她挑戰了成功是線性的這個觀念。",p_en:"challenge + noun + that",p_de:"in Frage stellen + dass + Konj. I",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"question"},
+  {en:"Not once did he consider giving up.",de:"Nicht einmal dachte er daran, aufzugeben.",zh:"他從來沒有考慮過放棄。",p_en:"Not once + did + S + verb",p_de:"Nicht einmal + Inversion",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"star"},
+  {en:"The policy has unintended consequences.",de:"Die Politik hat unbeabsichtigte Folgen.",zh:"這項政策產生了意想不到的後果。",p_en:"have + adj. + noun",p_de:"haben + Adj. + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"fork"},
+  {en:"She attributed the failure to poor planning.",de:"Sie führte das Scheitern auf schlechte Planung zurück.",zh:"她將失敗歸因於計劃不周。",p_en:"attribute + O + to + noun",p_de:"zurückführen auf + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"The framework provides a basis for analysis.",de:"Der Rahmen bietet eine Grundlage für Analyse.",zh:"這個框架為分析提供了基礎。",p_en:"provide + O + for + noun",p_de:"bieten + Akk. + für + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"building"},
+  {en:"He was in a dilemma about what to choose.",de:"Er steckte in einem Dilemma, was er wählen sollte.",zh:"他對於選擇什麼感到左右為難。",p_en:"be in a dilemma about + wh",p_de:"in einem Dilemma stecken + Nebensatz",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"fork"},
+  {en:"The correlation does not imply causation.",de:"Die Korrelation impliziert keine Kausalität.",zh:"相關性並不意味著因果關係。",p_en:"S + does not + verb + O",p_de:"implizieren + Akk. + nicht",lv_en:"高3",lv_de:"B2",t:"nature",ic:"link"},
+  {en:"She was torn between ambition and contentment.",de:"Sie war hin- und hergerissen zwischen Ehrgeiz und Zufriedenheit.",zh:"她在野心與滿足感之間感到矛盾。",p_en:"be torn between + noun + and",p_de:"hin- und hergerissen zwischen + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"fork"},
+  {en:"The discourse surrounding identity is complex.",de:"Der Diskurs rund um Identität ist komplex.",zh:"關於身份認同的論述是複雜的。",p_en:"The discourse surrounding + noun",p_de:"Diskurs + rund um + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"speech"},
+  {en:"He remained steadfast in his convictions.",de:"Er blieb seinen Überzeugungen treu.",zh:"他在自己的信念上保持堅定。",p_en:"remain + adj. + in + noun",p_de:"bleiben + Dat. + treu",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"star"},
+  {en:"She is well-versed in classical literature.",de:"Sie ist mit klassischer Literatur bestens vertraut.",zh:"她對古典文學非常熟悉。",p_en:"be well-versed in + noun",p_de:"vertraut sein mit + Dat.",lv_en:"高3",lv_de:"B2",t:"school",ic:"book"},
+  {en:"The outcome hinges on political will.",de:"Das Ergebnis hängt vom politischen Willen ab.",zh:"結果取決於政治意願。",p_en:"hinge on + noun",p_de:"abhängen von + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"building"},
+  {en:"He came to terms with his limitations.",de:"Er fand sich mit seinen Grenzen ab.",zh:"他接受了自己的局限性。",p_en:"come to terms with + noun",p_de:"sich abfinden mit + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"The breakthrough came after years of failure.",de:"Der Durchbruch kam nach Jahren des Scheiterns.",zh:"這一突破是在多年失敗後取得的。",p_en:"S + came + after + time",p_de:"kommen + nach + Dat.",lv_en:"高3",lv_de:"B2",t:"nature",ic:"science"},
+  {en:"She challenged the assumptions underlying the theory.",de:"Sie hinterfragte die Annahmen, die der Theorie zugrunde liegen.",zh:"她挑戰了這個理論背後的假設。",p_en:"challenge + noun + underlying",p_de:"Relativsatz + zugrunde liegen",lv_en:"高3",lv_de:"B2",t:"nature",ic:"question"},
+  {en:"He is acutely aware of his privilege.",de:"Er ist sich seiner Privilegien voll bewusst.",zh:"他對自己的特權有深刻的認識。",p_en:"be acutely aware of + noun",p_de:"sich bewusst sein + Gen.",lv_en:"高3",lv_de:"B2",t:"social",ic:"eye"},
+  {en:"The analogy fails to capture the complexity.",de:"Die Analogie erfasst die Komplexität nicht.",zh:"這個類比無法捕捉其複雜性。",p_en:"fail + to + verb + O",p_de:"erfassen + Akk. + nicht",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"She stood by her decision despite criticism.",de:"Sie blieb trotz Kritik bei ihrer Entscheidung.",zh:"儘管受到批評，她仍堅持自己的決定。",p_en:"stand by + O + despite + noun",p_de:"bei + Dat. bleiben + trotz",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"star"},
+  {en:"The tension between freedom and security persists.",de:"Die Spannung zwischen Freiheit und Sicherheit bleibt bestehen.",zh:"自由與安全之間的張力持續存在。",p_en:"tension between + noun + persists",p_de:"bestehen bleiben",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"He was deeply influenced by existentialist thought.",de:"Er wurde tief vom existentialistischen Denken beeinflusst.",zh:"他深受存在主義思想的影響。",p_en:"was deeply influenced by + noun",p_de:"Passiv + von + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"idea"},
+  {en:"The narrative shifts depending on perspective.",de:"Die Erzählung verschiebt sich je nach Perspektive.",zh:"敘事視角因觀點不同而改變。",p_en:"shift depending on + noun",p_de:"sich verschieben + je nach + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"eye"},
+  {en:"She grappled with the ethical implications.",de:"Sie rang mit den ethischen Konsequenzen.",zh:"她努力應對其中的倫理問題。",p_en:"grapple with + noun",p_de:"ringen mit + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"question"},
+  {en:"The innovation disrupted the entire industry.",de:"Die Innovation revolutionierte die gesamte Branche.",zh:"這項創新顛覆了整個行業。",p_en:"disrupt + O",p_de:"revolutionieren + Akk.",lv_en:"高3",lv_de:"B2",t:"nature",ic:"tech"},
+  {en:"He placed too much emphasis on perfection.",de:"Er legte zu viel Wert auf Perfektion.",zh:"他對完美太過執著。",p_en:"place too much emphasis on + noun",p_de:"Wert legen auf + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"scale"},
+  {en:"She was driven by a relentless pursuit of truth.",de:"Sie wurde von einem unermüdlichen Streben nach Wahrheit angetrieben.",zh:"她被對真理的不懈追求所驅動。",p_en:"be driven by + noun phrase",p_de:"Passiv + von + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"run"},
+  {en:"The lack of transparency undermines public trust.",de:"Mangelnde Transparenz untergräbt das öffentliche Vertrauen.",zh:"缺乏透明度會破壞公眾信任。",p_en:"S + undermines + O",p_de:"untergraben + Akk.",lv_en:"高3",lv_de:"B2",t:"social",ic:"building"},
+  {en:"He questioned the validity of the data.",de:"Er stellte die Gültigkeit der Daten in Frage.",zh:"他質疑數據的有效性。",p_en:"question + noun phrase",p_de:"in Frage stellen + Akk.",lv_en:"高3",lv_de:"B2",t:"nature",ic:"question"},
+  {en:"The reform was met with widespread resistance.",de:"Die Reform stieß auf weitverbreiteten Widerstand.",zh:"這項改革遭到了廣泛的抵制。",p_en:"was met with + adj. + noun",p_de:"stoßen auf + Akk.",lv_en:"高3",lv_de:"B2",t:"social",ic:"building"},
+  {en:"She articulated her position with great clarity.",de:"Sie formulierte ihre Position mit großer Klarheit.",zh:"她以極清晰的方式表達了自己的立場。",p_en:"articulate + O + with + noun",p_de:"formulieren + Akk. + mit + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"speech"},
+  {en:"The disparity in income reflects structural inequality.",de:"Die Einkommensunterschiede spiegeln strukturelle Ungleichheit wider.",zh:"收入差距反映了結構性不平等。",p_en:"reflect + noun phrase",p_de:"widerspiegeln + Akk.",lv_en:"高3",lv_de:"B2",t:"social",ic:"scale"},
+  {en:"He is prone to making hasty judgments.",de:"Er neigt dazu, vorschnelle Urteile zu fällen.",zh:"他容易做出倉促的判斷。",p_en:"be prone to + verb-ing",p_de:"neigen dazu + zu + Inf.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"question"},
+  {en:"The philosopher argued that morality is subjective.",de:"Der Philosoph argumentierte, dass Moral subjektiv sei.",zh:"這位哲學家主張道德是主觀的。",p_en:"argue + that-clause",p_de:"argumentieren, dass + Konj. I",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"idea"},
+  {en:"She demonstrated remarkable resilience under pressure.",de:"Sie zeigte unter Druck bemerkenswerte Widerstandsfähigkeit.",zh:"她在壓力下展現了卓越的韌性。",p_en:"demonstrate + adj. + noun + under",p_de:"zeigen + Akk. + unter + Dat.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"star"},
+  {en:"The paradox challenges our intuitive understanding.",de:"Das Paradoxon stellt unser intuitives Verständnis in Frage.",zh:"這個悖論挑戰了我們直覺的理解。",p_en:"challenge + possessive + adj. + noun",p_de:"in Frage stellen + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"question"},
+  {en:"He was haunted by a sense of inadequacy.",de:"Ihn quälte ein Gefühl der Unzulänglichkeit.",zh:"他被一種不足感所困擾。",p_en:"be haunted by + noun phrase",p_de:"quälen + Akk. (Subjekt-Objekt-Inversion)",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"question"},
+  {en:"She brought a fresh perspective to the debate.",de:"Sie brachte eine frische Perspektive in die Debatte.",zh:"她為這場辯論帶來了新的視角。",p_en:"bring + O + to + noun",p_de:"bringen + Akk. + in + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"eye"},
+  {en:"The crisis exposed deep-seated systemic flaws.",de:"Die Krise legte tief sitzende systemische Mängel offen.",zh:"這場危機暴露了根深蒂固的系統性缺陷。",p_en:"expose + adj. + adj. + noun",p_de:"offenlegen + Akk.",lv_en:"高3",lv_de:"B2",t:"abstract",ic:"building"},
 ];
+
+// ── Language state & helpers ──
+let lang = localStorage.getItem("ep-lang-v2") === "de" ? "de" : "en";
+function txt(item) { return lang === "de" ? item.de : item.en; }
+function pat(item) { return lang === "de" ? item.p_de : item.p_en; }
+function lv(item)  { return lang === "de" ? item.lv_de : item.lv_en; }
+function BADGES()  { return lang === "de" ? BADGES_DE : BADGES_EN; }
+
 
 // ── TTS ──
 const synth = window.speechSynthesis;
@@ -633,9 +660,10 @@ let voices = [], current = null, showT = false, pool = [], used = new Set();
 let history = [], historyIdx = -1;
 
 function loadVoices() {
-  voices = synth ? synth.getVoices().filter(v => v.lang.startsWith("en")) : [];
+  const prefix = lang === "de" ? "de" : "en";
+  voices = synth ? synth.getVoices().filter(v => v.lang.startsWith(prefix)) : [];
   const s = document.getElementById("vsel");
-  if (!voices.length) { setTimeout(loadVoices, 300); return; }
+  if (!voices.length) { s.innerHTML = "<option>無可用語音</option>"; return; }
   s.innerHTML = "";
   voices.forEach((v, i) => {
     const o = document.createElement("option");
@@ -643,19 +671,27 @@ function loadVoices() {
     o.textContent = v.name + (v.localService ? " ★" : "");
     s.appendChild(o);
   });
-  const p = voices.findIndex(v => /Samantha|Karen|Daniel|Google US|Zira|David/i.test(v.name));
+  const preferred = lang === "de"
+    ? /Anna|Petra|Markus|Google Deutsch|Hedda|Stefan/i
+    : /Samantha|Karen|Daniel|Google US|Zira|David/i;
+  const p = voices.findIndex(v => preferred.test(v.name));
   if (p >= 0) s.value = p;
 }
 if (synth) { synth.onvoiceschanged = loadVoices; loadVoices(); }
 
-function applyFilter() {
-  const lv = document.getElementById("lsel").value;
+function recomputePool() {
+  const lvVal = document.getElementById("lsel").value;
   const tp = document.getElementById("tsel").value;
-  pool = ALL.filter(s => (lv === "all" || s.lv === lv) && (tp === "all" || s.t === tp));
+  const lvField = lang === "de" ? "lv_de" : "lv_en";
+  pool = SENTENCES.filter(s => (lvVal === "all" || s[lvField] === lvVal) && (tp === "all" || s.t === tp));
+  document.getElementById("cnt").textContent = pool.length + " 句";
+}
+
+function applyFilter() {
+  recomputePool();
   used = new Set();
   history = [];
   historyIdx = -1;
-  document.getElementById("cnt").textContent = pool.length + " 句";
   document.getElementById("prevbtn").disabled = true;
   next();
 }
@@ -690,21 +726,22 @@ function clearHi() { document.querySelectorAll(".word.hi").forEach(e => e.classL
 
 function showSent(item) {
   current = item;
-  renderWords(item.en);
-  document.getElementById("pat").textContent = item.p || "";
+  renderWords(txt(item));
+  document.getElementById("pat").textContent = pat(item) || "";
   document.getElementById("trans").textContent = item.zh || "";
-  document.getElementById("trans").style.display = showT ? "block" : "none";
+  document.getElementById("trans").style.visibility = showT ? "visible" : "hidden";
   document.getElementById("ttbtn").textContent = showT ? "[ 隱藏中文 ]" : "[ 顯示中文 ]";
-  const bd = BADGES[item.lv] || { bg: "rgba(255,255,255,0.08)", c: "#5a6e9a" };
+  const itemLv = lv(item);
+  const bd = BADGES()[itemLv] || { bg: "rgba(255,255,255,0.08)", c: "#5a6e9a" };
   const b = document.getElementById("badge");
-  b.textContent = item.lv; b.style.background = bd.bg; b.style.color = bd.c;
+  b.textContent = itemLv; b.style.background = bd.bg; b.style.color = bd.c;
   document.getElementById("illus").innerHTML = SVGS[item.ic] || SVGS["star"];
 }
 
 function toggleT() {
   showT = !showT;
   if (current) {
-    document.getElementById("trans").style.display = showT ? "block" : "none";
+    document.getElementById("trans").style.visibility = showT ? "visible" : "hidden";
     document.getElementById("ttbtn").textContent = showT ? "[ 隱藏中文 ]" : "[ 顯示中文 ]";
   }
 }
@@ -728,9 +765,10 @@ function prev() {
   document.getElementById("prevbtn").disabled = historyIdx <= 0;
 }
 
-function utter(txt, cb) {
+function utter(text, cb) {
   if (!synth) return;
-  const u = new SpeechSynthesisUtterance(txt);
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang === "de" ? "de-DE" : "en-US";
   const s = document.getElementById("vsel");
   if (voices[s.value]) u.voice = voices[s.value];
   u.rate = parseFloat(document.getElementById("spd").value);
@@ -739,12 +777,12 @@ function utter(txt, cb) {
   synth.speak(u);
 }
 
-function speakAll() { if (!synth || !current) return; synth.cancel(); clearHi(); utter(current.en); }
+function speakAll() { if (!synth || !current) return; synth.cancel(); clearHi(); utter(txt(current)); }
 
 function speakWBW() {
   if (!synth || !current) return;
   synth.cancel(); clearHi();
-  const words = current.en.split(/\s+/);
+  const words = txt(current).split(/\s+/);
   const spans = document.querySelectorAll(".word");
   let i = 0;
   function go() {
@@ -797,7 +835,32 @@ self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(r=>
   navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
 }
 
-applyFilter();
+// ── Language switching ──
+function setLang(L) {
+  lang = L;
+  try { localStorage.setItem("ep-lang-v2", L); } catch(e) {}
+  document.querySelectorAll(".lt").forEach(t => {
+    t.classList.toggle("active", t.dataset.lang === L);
+  });
+  const lsel = document.getElementById("lsel");
+  lsel.innerHTML = LEVELS[L].map(([v,t]) => `<option value="${v}">${t}</option>`).join("");
+  document.getElementById("subt").textContent = SUBTITLES[L];
+  if (synth) synth.cancel();
+  loadVoices();
+  recomputePool();
+  if (current) {
+    showSent(current);
+    document.getElementById("prevbtn").disabled = historyIdx <= 0;
+  } else {
+    applyFilter();
+  }
+}
+
+document.querySelectorAll(".lt").forEach(tab => {
+  tab.addEventListener("click", () => setLang(tab.dataset.lang));
+});
+
+setLang(lang);
 </script>
 </body>
 </html>

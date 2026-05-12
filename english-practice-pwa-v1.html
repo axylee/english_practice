@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="英文練習">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a1208">
-<title>English Practice</title>
+<title>English / German Practice</title>
 
 <!-- PWA Manifest inline as base64 data URI -->
 <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22English%20Practice%22%2C%22short_name%22%3A%22英文練習%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1208%22%2C%22theme_color%22%3A%22%231a1208%22%2C%22orientation%22%3A%22portrait%22%7D">
@@ -49,7 +49,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', 'Noto Sans TC', sans-serif;
-  padding: calc(var(--safe-top) + 16px) 14px calc(var(--safe-bottom) + 24px);
+  padding: calc(var(--safe-top) + 10px) 14px calc(var(--safe-bottom) + 14px);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -59,26 +59,36 @@ body {
 /* ── Header ── */
 .header {
   text-align: center;
-  margin-bottom: 16px;
-  padding-bottom: 14px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--border);
 }
 .header h1 {
   font-family: 'JetBrains Mono', monospace;
   font-size: clamp(16px, 4vw, 20px);
   font-weight: 600;
-  color: var(--accent);
+  color: var(--muted);
   letter-spacing: 0.05em;
 }
 .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.lt {
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.15s;
+  padding: 2px 2px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.lt.active { color: var(--accent); }
+.lt:hover { color: var(--accent2); }
 
 /* ── Panel ── */
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
 }
 .panel-title {
   font-family: 'JetBrains Mono', monospace;
@@ -86,8 +96,8 @@ body {
   color: var(--accent);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -139,7 +149,7 @@ body {
   color: var(--text);
   text-align: center;
   line-height: 1.6;
-  min-height: 60px;
+  height: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,7 +186,8 @@ body {
   text-align: center;
   margin-top: 10px;
   line-height: 1.6;
-  display: none;
+  min-height: 26px;
+  visibility: hidden;
 }
 .ttbtn {
   display: block;
@@ -197,8 +208,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 12px 0 6px;
-  min-height: 84px;
+  padding: 6px 0 2px;
+  min-height: 60px;
 }
 
 /* ── Controls ── */
@@ -251,8 +262,8 @@ input[type=range] {
 /* ── Buttons ── */
 .btn-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 .btn {
   height: 50px;
@@ -349,8 +360,7 @@ input[type=range] {
 
 /* ── Responsive ── */
 @media (max-width: 380px) {
-  .btn-grid { grid-template-columns: 1fr 1fr; }
-  .btn-next { grid-column: 1 / -1; }
+  .btn { font-size: 11px; padding: 0 2px; }
   .sentence-text { font-size: 17px; }
 }
 @media (min-width: 600px) {
@@ -373,8 +383,8 @@ input[type=range] {
   </div>
 
   <div class="header">
-    <h1>// ENGLISH PRACTICE</h1>
-    <p>小5 ─ 國3 ｜ 160 句隨機練習</p>
+    <h1>// <span class="lt" data-lang="en">ENGLISH</span> / <span class="lt" data-lang="de">GERMAN</span> PRACTICE</h1>
+    <p id="subt">小5 ─ 國3 ｜ 160 句隨機練習</p>
   </div>
 
   <div class="panel">
@@ -413,7 +423,6 @@ input[type=range] {
   </div>
 
   <div class="panel">
-    <div class="panel-title">語音設定</div>
     <div class="ctrl-row">
       <label>聲音</label>
       <select class="vsel" id="vsel"><option>載入中...</option></select>
@@ -423,14 +432,10 @@ input[type=range] {
       <input type="range" id="spd" min="0.5" max="1.5" step="0.1" value="0.9">
       <span class="sv" id="spdv">0.9x</span>
     </div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-title">播放控制</div>
-    <div class="btn-grid">
+    <div class="btn-grid" style="margin-top:10px;">
+      <button class="btn btn-prev" id="prevbtn" onclick="prev()" disabled>← 上一句</button>
       <button class="btn btn-speak" onclick="speakAll()">▶ 整句</button>
       <button class="btn btn-word" onclick="speakWBW()">▶ 逐字</button>
-      <button class="btn btn-prev" id="prevbtn" onclick="prev()" disabled>← 上一句</button>
       <button class="btn btn-next" onclick="next()">下一句 →</button>
     </div>
     <div class="hint">點句子中的單字可單獨朗讀</div>
@@ -472,149 +477,170 @@ const SVGS = {
 };
 
 // ── Badge colours ──
-const BADGES = {
+const BADGES_EN = {
   "小5":{bg:"rgba(80,192,128,0.18)",c:"#50c080"},
   "小6":{bg:"rgba(64,176,160,0.18)",c:"#40b0a0"},
   "國1":{bg:"rgba(80,128,224,0.18)",c:"#5080e0"},
   "國2":{bg:"rgba(232,128,48,0.18)",c:"#e08030"},
   "國3":{bg:"rgba(224,80,64,0.18)",c:"#e05040"},
 };
+const BADGES_DE = {
+  "A1":{bg:"rgba(80,192,128,0.18)",c:"#50c080"},
+  "A2":{bg:"rgba(80,128,224,0.18)",c:"#5080e0"},
+};
 
-// ── Sentence bank (160 sentences) ──
-const ALL = [
-  {en:"I like cats.",zh:"我喜歡貓。",p:"S + like + noun",lv:"小5",t:"nature",ic:"cat"},
-  {en:"She has a dog.",zh:"她有一隻狗。",p:"S + have/has + noun",lv:"小5",t:"nature",ic:"dog"},
-  {en:"It is sunny today.",zh:"今天天氣晴朗。",p:"It is + adj.",lv:"小5",t:"daily",ic:"sun"},
-  {en:"I want to go home.",zh:"我想要回家。",p:"want to + verb",lv:"小5",t:"daily",ic:"home"},
-  {en:"She reads every day.",zh:"她每天看書。",p:"S + verb + time",lv:"小5",t:"school",ic:"book"},
-  {en:"He runs very fast.",zh:"他跑得很快。",p:"S + verb + adv.",lv:"小5",t:"daily",ic:"run"},
-  {en:"We eat lunch together.",zh:"我們一起吃午飯。",p:"S + verb + together",lv:"小5",t:"food",ic:"meal"},
-  {en:"Do you have a pet?",zh:"你有養寵物嗎？",p:"Do you + verb?",lv:"小5",t:"nature",ic:"cat"},
-  {en:"I don't like spicy food.",zh:"我不喜歡辣的食物。",p:"don't + verb",lv:"小5",t:"food",ic:"food"},
-  {en:"My mom is very kind.",zh:"我媽媽非常親切。",p:"S + be + adj.",lv:"小5",t:"family",ic:"family"},
-  {en:"He likes to swim.",zh:"他喜歡游泳。",p:"like to + verb",lv:"小5",t:"daily",ic:"swim"},
-  {en:"We play in the park.",zh:"我們在公園玩耍。",p:"S + verb + in the",lv:"小5",t:"daily",ic:"park"},
-  {en:"The bird can fly.",zh:"這隻鳥會飛。",p:"S + can + verb",lv:"小5",t:"nature",ic:"tree"},
-  {en:"I brush my teeth.",zh:"我刷牙。",p:"S + verb + obj.",lv:"小5",t:"daily",ic:"clock"},
-  {en:"It is cold outside.",zh:"外面很冷。",p:"It is + adj. + adv.",lv:"小5",t:"daily",ic:"rain"},
-  {en:"I have two sisters.",zh:"我有兩個姊妹。",p:"I have + number + noun",lv:"小5",t:"family",ic:"family"},
-  {en:"He goes to school.",zh:"他去上學。",p:"S + go to + place",lv:"小5",t:"school",ic:"school"},
-  {en:"We drink water.",zh:"我們喝水。",p:"S + verb + noun",lv:"小5",t:"food",ic:"water"},
-  {en:"Is this your bag?",zh:"這是你的包嗎？",p:"Is this + your + noun?",lv:"小5",t:"school",ic:"book"},
-  {en:"She wears a red dress.",zh:"她穿著紅色洋裝。",p:"S + wear + adj. + noun",lv:"小5",t:"daily",ic:"heart"},
-  {en:"Do you want some water?",zh:"你要喝水嗎？",p:"Do you want + noun?",lv:"小5",t:"food",ic:"water"},
-  {en:"She is my best friend.",zh:"她是我最好的朋友。",p:"S + be + possessive + noun",lv:"小5",t:"family",ic:"heart"},
-  {en:"The cat is under the table.",zh:"貓咪在桌子下面。",p:"S + be + preposition",lv:"小5",t:"nature",ic:"cat"},
-  {en:"They play soccer after school.",zh:"他們放學後踢足球。",p:"S + verb + after school",lv:"小6",t:"school",ic:"ball"},
-  {en:"He is good at math.",zh:"他擅長數學。",p:"be good at + noun",lv:"小6",t:"school",ic:"school"},
-  {en:"We go to school by bus.",zh:"我們搭公車上學。",p:"go by + vehicle",lv:"小6",t:"daily",ic:"bus"},
-  {en:"She always helps others.",zh:"她總是幫助別人。",p:"always + verb",lv:"小6",t:"family",ic:"heart"},
-  {en:"He visited his grandma.",zh:"他去拜訪了他的奶奶。",p:"past tense: visited",lv:"小6",t:"family",ic:"family"},
-  {en:"Did you eat breakfast?",zh:"你吃早餐了嗎？",p:"Did + S + verb?",lv:"小6",t:"food",ic:"meal"},
-  {en:"She doesn't like rain.",zh:"她不喜歡下雨。",p:"doesn't + verb",lv:"小6",t:"nature",ic:"rain"},
-  {en:"I bought a new book.",zh:"我買了一本新書。",p:"bought = buy (past)",lv:"小6",t:"school",ic:"book"},
-  {en:"We saw a big tree.",zh:"我們看到了一棵大樹。",p:"saw = see (past)",lv:"小6",t:"nature",ic:"tree"},
-  {en:"The cat slept all day.",zh:"這隻貓睡了一整天。",p:"past tense + time",lv:"小6",t:"nature",ic:"cat"},
-  {en:"She is taller than me.",zh:"她比我高。",p:"adj. + -er + than",lv:"小6",t:"daily",ic:"family"},
-  {en:"He walked to the store.",zh:"他步行去商店。",p:"walked = walk (past)",lv:"小6",t:"daily",ic:"shop"},
-  {en:"They cooked dinner together.",zh:"他們一起煮晚餐。",p:"cooked = cook (past)",lv:"小6",t:"food",ic:"meal"},
-  {en:"I like summer more than winter.",zh:"我比較喜歡夏天。",p:"like X more than Y",lv:"小6",t:"daily",ic:"sun"},
-  {en:"The dog ran very fast.",zh:"那隻狗跑得很快。",p:"ran = run (past)",lv:"小6",t:"nature",ic:"dog"},
-  {en:"We had a picnic yesterday.",zh:"我們昨天去野餐。",p:"had = have (past)",lv:"小6",t:"family",ic:"park"},
-  {en:"He doesn't eat vegetables.",zh:"他不吃蔬菜。",p:"doesn't + verb",lv:"小6",t:"food",ic:"food"},
-  {en:"Can you speak English?",zh:"你會說英文嗎？",p:"Can + S + verb?",lv:"小6",t:"school",ic:"school"},
-  {en:"She sang a pretty song.",zh:"她唱了一首好聽的歌。",p:"sang = sing (past)",lv:"小6",t:"daily",ic:"heart"},
-  {en:"Is the park far from here?",zh:"公園離這裡遠嗎？",p:"Is + S + adj.?",lv:"小6",t:"travel",ic:"park"},
-  {en:"She loves eating ice cream.",zh:"她很喜歡吃冰淇淋。",p:"loves + verb-ing",lv:"小6",t:"food",ic:"food"},
-  {en:"He plays the piano well.",zh:"他鋼琴彈得很好。",p:"S + verb + adv.",lv:"小6",t:"school",ic:"star"},
-  {en:"My dad cooks on weekends.",zh:"我爸爸週末做飯。",p:"S + verb + time",lv:"小6",t:"food",ic:"meal"},
-  {en:"The store opens at nine.",zh:"商店九點開門。",p:"S + open + at + time",lv:"小6",t:"daily",ic:"shop"},
-  {en:"She learned to ride a bike.",zh:"她學會了騎腳踏車。",p:"learned + to + verb",lv:"小6",t:"daily",ic:"run"},
-  {en:"He can swim very well.",zh:"他游泳游得很好。",p:"can + verb + adv.",lv:"國1",t:"daily",ic:"swim"},
-  {en:"We should drink more water.",zh:"我們應該多喝水。",p:"should + verb",lv:"國1",t:"daily",ic:"water"},
-  {en:"I want to be a doctor.",zh:"我想成為一名醫生。",p:"want to be + noun",lv:"國1",t:"school",ic:"school"},
-  {en:"She is watching TV now.",zh:"她現在正在看電視。",p:"be + verb-ing (now)",lv:"國1",t:"daily",ic:"clock"},
-  {en:"Are you studying for the exam?",zh:"你在為考試念書嗎？",p:"Are + S + verb-ing?",lv:"國1",t:"school",ic:"book"},
-  {en:"He isn't coming today.",zh:"他今天不來了。",p:"isn't + verb-ing",lv:"國1",t:"daily",ic:"clock"},
-  {en:"I got up at seven.",zh:"我七點起床。",p:"got up = get up (past)",lv:"國1",t:"daily",ic:"clock"},
-  {en:"She gave me a gift.",zh:"她給了我一份禮物。",p:"gave = give (past)",lv:"國1",t:"family",ic:"heart"},
-  {en:"We had dinner at home.",zh:"我們在家吃晚餐。",p:"had = have (past) + place",lv:"國1",t:"food",ic:"home"},
-  {en:"He didn't go to school.",zh:"他沒有去上學。",p:"didn't + base verb",lv:"國1",t:"school",ic:"school"},
-  {en:"The movie was exciting.",zh:"這部電影很刺激。",p:"S + was + adj.",lv:"國1",t:"daily",ic:"star"},
-  {en:"I will call you later.",zh:"我待會打電話給你。",p:"will + verb (future)",lv:"國1",t:"daily",ic:"phone"},
-  {en:"She will visit us tomorrow.",zh:"她明天會來拜訪我們。",p:"will + verb + time",lv:"國1",t:"family",ic:"family"},
-  {en:"Will you come to the party?",zh:"你會來派對嗎？",p:"Will + S + verb?",lv:"國1",t:"family",ic:"fun"},
-  {en:"I won't be late again.",zh:"我不會再遲到了。",p:"won't + verb",lv:"國1",t:"school",ic:"clock"},
-  {en:"He must finish his homework.",zh:"他必須完成他的作業。",p:"must + verb",lv:"國1",t:"school",ic:"book"},
-  {en:"The dog is sleeping now.",zh:"那隻狗現在正在睡覺。",p:"be + verb-ing (now)",lv:"國1",t:"nature",ic:"dog"},
-  {en:"We went to the beach.",zh:"我們去了海邊。",p:"went = go (past)",lv:"國1",t:"travel",ic:"water"},
-  {en:"Did she find her keys?",zh:"她找到她的鑰匙了嗎？",p:"Did + S + base verb?",lv:"國1",t:"daily",ic:"home"},
-  {en:"She is afraid of spiders.",zh:"她怕蜘蛛。",p:"be afraid of + noun",lv:"國1",t:"nature",ic:"tree"},
-  {en:"We need to leave now.",zh:"我們現在需要離開了。",p:"need + to + verb",lv:"國1",t:"daily",ic:"bus"},
-  {en:"They arrived at noon.",zh:"他們在中午抵達。",p:"arrived at + time",lv:"國1",t:"travel",ic:"clock"},
-  {en:"I am reading a comic book.",zh:"我正在看漫畫書。",p:"be + verb-ing",lv:"國1",t:"daily",ic:"book"},
-  {en:"He looks tired today.",zh:"他今天看起來很累。",p:"look + adj.",lv:"國1",t:"daily",ic:"run"},
-  {en:"We should go to bed early.",zh:"我們應該早點睡覺。",p:"should + verb",lv:"國1",t:"daily",ic:"clock"},
-  {en:"The flowers smell wonderful.",zh:"這些花聞起來很香。",p:"S + smell + adj.",lv:"國1",t:"nature",ic:"tree"},
-  {en:"He likes hiking in the mountains.",zh:"他喜歡在山裡健行。",p:"like + verb-ing + place",lv:"國1",t:"nature",ic:"tree"},
-  {en:"She wants to travel the world.",zh:"她想要環遊世界。",p:"want + to + verb",lv:"國1",t:"travel",ic:"plane"},
-  {en:"It takes one hour by train.",zh:"搭火車要一個小時。",p:"It takes + time + by",lv:"國1",t:"travel",ic:"bus"},
-  {en:"They are playing soccer now.",zh:"他們現在正在踢足球。",p:"be + verb-ing",lv:"國2",t:"daily",ic:"ball"},
-  {en:"She told me a secret.",zh:"她告訴了我一個秘密。",p:"told = tell (past)",lv:"國2",t:"family",ic:"heart"},
-  {en:"He finished his homework early.",zh:"他很早就完成了作業。",p:"finished + time adv.",lv:"國2",t:"school",ic:"book"},
-  {en:"I have been here before.",zh:"我以前來過這裡。",p:"have been + adv.",lv:"國2",t:"travel",ic:"plane"},
-  {en:"She has already eaten lunch.",zh:"她已經吃過午餐了。",p:"has already + past participle",lv:"國2",t:"food",ic:"meal"},
-  {en:"Have you ever tried sushi?",zh:"你曾經吃過壽司嗎？",p:"Have + S + ever + pp?",lv:"國2",t:"food",ic:"meal"},
-  {en:"He hasn't called me yet.",zh:"他還沒打電話給我。",p:"hasn't + pp + yet",lv:"國2",t:"daily",ic:"phone"},
-  {en:"We have visited ten countries.",zh:"我們已經去過十個國家了。",p:"have + pp + object",lv:"國2",t:"travel",ic:"plane"},
-  {en:"I was reading when she called.",zh:"她打電話來時我正在看書。",p:"was + verb-ing + when",lv:"國2",t:"daily",ic:"book"},
-  {en:"They were laughing all night.",zh:"他們整晚都在笑。",p:"were + verb-ing + time",lv:"國2",t:"family",ic:"fun"},
-  {en:"This bag is the most expensive.",zh:"這個包包是最貴的。",p:"the most + adj.",lv:"國2",t:"daily",ic:"shop"},
-  {en:"He runs faster than I do.",zh:"他跑得比我快。",p:"adv. + -er + than + clause",lv:"國2",t:"daily",ic:"run"},
-  {en:"She is the best student here.",zh:"她是這裡最好的學生。",p:"the best + noun",lv:"國2",t:"school",ic:"school"},
-  {en:"I have never seen snow.",zh:"我從來沒有看過雪。",p:"have never + pp",lv:"國2",t:"nature",ic:"rain"},
-  {en:"She bought the cheapest one.",zh:"她買了最便宜的那個。",p:"the + superlative",lv:"國2",t:"daily",ic:"shop"},
-  {en:"He is too tired to walk.",zh:"他太累了，走不動。",p:"too + adj. + to + verb",lv:"國2",t:"daily",ic:"run"},
-  {en:"This is the biggest park.",zh:"這是最大的公園。",p:"the biggest + noun",lv:"國2",t:"travel",ic:"park"},
-  {en:"I feel happy when I sing.",zh:"當我唱歌時我感到快樂。",p:"feel + adj. + when",lv:"國2",t:"daily",ic:"heart"},
-  {en:"She spent all her money.",zh:"她花光了所有的錢。",p:"spent = spend (past)",lv:"國2",t:"daily",ic:"shop"},
-  {en:"He decided to study harder.",zh:"他決定更努力學習。",p:"decided + to + verb",lv:"國2",t:"school",ic:"book"},
-  {en:"I hope to see you soon.",zh:"我希望很快能見到你。",p:"hope + to + verb",lv:"國2",t:"family",ic:"heart"},
-  {en:"She enjoys walking in the rain.",zh:"她喜歡在雨中散步。",p:"enjoy + verb-ing",lv:"國2",t:"nature",ic:"rain"},
-  {en:"He took a photo of the sunset.",zh:"他拍了一張夕陽的照片。",p:"took = take (past)",lv:"國2",t:"nature",ic:"sun"},
-  {en:"I find math very interesting.",zh:"我覺得數學非常有趣。",p:"find + O + adj.",lv:"國2",t:"school",ic:"school"},
-  {en:"She forgot to bring her lunch.",zh:"她忘記帶午餐了。",p:"forgot + to + verb",lv:"國2",t:"school",ic:"meal"},
-  {en:"He is the tallest in his class.",zh:"他是班上最高的學生。",p:"the + superlative + in",lv:"國2",t:"school",ic:"school"},
-  {en:"We sang songs around the fire.",zh:"我們圍著火堆唱歌。",p:"sang = sing (past)",lv:"國2",t:"family",ic:"star"},
-  {en:"I haven't seen that movie.",zh:"我還沒看過那部電影。",p:"haven't + pp",lv:"國2",t:"daily",ic:"star"},
-  {en:"If it rains, stay inside.",zh:"如果下雨，就待在室內。",p:"If + present, imperative",lv:"國3",t:"daily",ic:"rain"},
-  {en:"She has never tried sushi.",zh:"她從來沒有嚐過壽司。",p:"has never + pp",lv:"國3",t:"food",ic:"meal"},
-  {en:"I wish I had more time.",zh:"我希望我有更多時間。",p:"I wish + S + past",lv:"國3",t:"daily",ic:"wish"},
-  {en:"He is too busy to help.",zh:"他太忙了，沒辦法幫忙。",p:"too + adj. + to + verb",lv:"國3",t:"daily",ic:"clock"},
-  {en:"We had a great time there.",zh:"我們在那裡玩得很開心。",p:"had a great time + adv.",lv:"國3",t:"travel",ic:"fun"},
-  {en:"If I were you, I'd go.",zh:"如果我是你，我會去。",p:"If I were + S, I'd + verb",lv:"國3",t:"daily",ic:"wish"},
-  {en:"She suggested going by train.",zh:"她建議搭火車去。",p:"suggested + verb-ing",lv:"國3",t:"travel",ic:"bus"},
-  {en:"He asked me to wait.",zh:"他叫我等一下。",p:"asked + O + to + verb",lv:"國3",t:"daily",ic:"clock"},
-  {en:"She made me laugh.",zh:"她讓我大笑。",p:"make + O + base verb",lv:"國3",t:"family",ic:"fun"},
-  {en:"The book was written in 1990.",zh:"這本書寫於1990年。",p:"was + pp (passive voice)",lv:"國3",t:"school",ic:"book"},
-  {en:"English is spoken worldwide.",zh:"英語在全世界通用。",p:"is + pp (passive voice)",lv:"國3",t:"school",ic:"star"},
-  {en:"He said that he was tired.",zh:"他說他很累。",p:"said that + clause",lv:"國3",t:"daily",ic:"run"},
-  {en:"I don't know where she went.",zh:"我不知道她去了哪裡。",p:"don't know + wh-clause",lv:"國3",t:"daily",ic:"home"},
-  {en:"If I had wings, I'd fly.",zh:"如果我有翅膀，我就會飛。",p:"If I had + noun, I'd + verb",lv:"國3",t:"nature",ic:"wish"},
-  {en:"She wishes she could travel more.",zh:"她希望她能多旅行。",p:"wishes + S + could + verb",lv:"國3",t:"travel",ic:"plane"},
-  {en:"He has studied English for years.",zh:"他已經學了多年英文。",p:"has + pp + for + time",lv:"國3",t:"school",ic:"book"},
-  {en:"He kept on walking.",zh:"他繼續走著。",p:"keep on + verb-ing",lv:"國3",t:"daily",ic:"run"},
-  {en:"She prefers reading to watching TV.",zh:"她比起看電視更喜歡看書。",p:"prefer + verb-ing + to + verb-ing",lv:"國3",t:"daily",ic:"book"},
-  {en:"He is said to be very talented.",zh:"據說他非常有才華。",p:"is said + to be (passive)",lv:"國3",t:"school",ic:"star"},
-  {en:"The bridge was built in 1980.",zh:"這座橋建於1980年。",p:"was + pp + in + year",lv:"國3",t:"school",ic:"school"},
-  {en:"I regret not studying harder.",zh:"我後悔沒有更努力念書。",p:"regret + not + verb-ing",lv:"國3",t:"school",ic:"book"},
-  {en:"He seems to have forgotten it.",zh:"他似乎忘記了這件事。",p:"seem + to have + pp",lv:"國3",t:"daily",ic:"clock"},
-  {en:"She is known for her kindness.",zh:"她以善良著稱。",p:"is known for + noun",lv:"國3",t:"family",ic:"heart"},
-  {en:"Not knowing the answer, he was silent.",zh:"不知道答案，他保持沉默。",p:"Not + verb-ing, S + verb",lv:"國3",t:"school",ic:"book"},
-  {en:"Having finished his work, he left.",zh:"完成工作後，他離開了。",p:"Having + pp, S + verb",lv:"國3",t:"daily",ic:"run"},
-  {en:"She had the report finished by noon.",zh:"她讓報告在中午前完成了。",p:"had + O + pp",lv:"國3",t:"school",ic:"book"},
-  {en:"I wonder whether she will come.",zh:"我不確定她是否會來。",p:"wonder + whether-clause",lv:"國3",t:"social",ic:"fun"},
+// ── Level filter options per language ──
+const LEVELS = {
+  en: [["all","全部難度"],["小5","小學五年級"],["小6","小學六年級"],["國1","國中一年級"],["國2","國中二年級"],["國3","國中三年級"]],
+  de: [["all","全部難度"],["A1","A1 入門"],["A2","A2 基礎"]],
+};
+const SUBTITLES = {
+  en: "小5 ─ 國3 ｜ 132 句中德對照",
+  de: "A1 ─ A2 ｜ 132 句中德對照",
+};
+
+// ── Sentence bank (132 paired sentences, EN+DE+ZH) ──
+const SENTENCES = [
+  {en:"I like cats.",de:"Ich mag Katzen.",zh:"我喜歡貓。",p_en:"S + like + noun",p_de:"S + mögen + Akk.",lv_en:"小5",lv_de:"A1",t:"nature",ic:"cat"},
+  {en:"She has a dog.",de:"Sie hat einen Hund.",zh:"她有一隻狗。",p_en:"S + have/has + noun",p_de:"S + haben + Akk.",lv_en:"小5",lv_de:"A1",t:"nature",ic:"dog"},
+  {en:"It is sunny today.",de:"Es ist heute sonnig.",zh:"今天天氣晴朗。",p_en:"It is + adj.",p_de:"Es ist + Adj.",lv_en:"小5",lv_de:"A1",t:"daily",ic:"sun"},
+  {en:"I want to go home.",de:"Ich will nach Hause gehen.",zh:"我想要回家。",p_en:"want to + verb",p_de:"wollen + Infinitiv",lv_en:"小5",lv_de:"A1",t:"daily",ic:"home"},
+  {en:"She reads every day.",de:"Sie liest jeden Tag.",zh:"她每天看書。",p_en:"S + verb + time",p_de:"S + Verb + Zeitangabe",lv_en:"小5",lv_de:"A1",t:"school",ic:"book"},
+  {en:"He runs very fast.",de:"Er läuft sehr schnell.",zh:"他跑得很快。",p_en:"S + verb + adv.",p_de:"S + Verb + Adverb",lv_en:"小5",lv_de:"A1",t:"daily",ic:"run"},
+  {en:"We eat lunch together.",de:"Wir essen zusammen Mittag.",zh:"我們一起吃午飯。",p_en:"S + verb + together",p_de:"S + Verb + zusammen",lv_en:"小5",lv_de:"A1",t:"food",ic:"meal"},
+  {en:"Do you have a pet?",de:"Hast du ein Haustier?",zh:"你有養寵物嗎？",p_en:"Do you + verb?",p_de:"Hast du + Akk.?",lv_en:"小5",lv_de:"A1",t:"nature",ic:"cat"},
+  {en:"I don't like spicy food.",de:"Ich mag kein scharfes Essen.",zh:"我不喜歡辣的食物。",p_en:"don't + verb",p_de:"mögen + kein + Akk.",lv_en:"小5",lv_de:"A1",t:"food",ic:"food"},
+  {en:"My mom is very kind.",de:"Meine Mutter ist sehr nett.",zh:"我媽媽非常親切。",p_en:"S + be + adj.",p_de:"S + sein + Adj.",lv_en:"小5",lv_de:"A1",t:"family",ic:"family"},
+  {en:"He likes to swim.",de:"Er schwimmt gern.",zh:"他喜歡游泳。",p_en:"like to + verb",p_de:"Verb + gern",lv_en:"小5",lv_de:"A1",t:"daily",ic:"swim"},
+  {en:"We play in the park.",de:"Wir spielen im Park.",zh:"我們在公園玩耍。",p_en:"S + verb + in the",p_de:"S + Verb + im + Ort",lv_en:"小5",lv_de:"A1",t:"daily",ic:"park"},
+  {en:"The bird can fly.",de:"Der Vogel kann fliegen.",zh:"這隻鳥會飛。",p_en:"S + can + verb",p_de:"S + können + Infinitiv",lv_en:"小5",lv_de:"A1",t:"nature",ic:"tree"},
+  {en:"I brush my teeth.",de:"Ich putze meine Zähne.",zh:"我刷牙。",p_en:"S + verb + obj.",p_de:"S + Verb + Akk.",lv_en:"小5",lv_de:"A1",t:"daily",ic:"clock"},
+  {en:"It is cold outside.",de:"Es ist draußen kalt.",zh:"外面很冷。",p_en:"It is + adj. + adv.",p_de:"Es ist + Adv. + Adj.",lv_en:"小5",lv_de:"A1",t:"daily",ic:"rain"},
+  {en:"I have two sisters.",de:"Ich habe zwei Schwestern.",zh:"我有兩個姊妹。",p_en:"I have + number + noun",p_de:"Ich habe + Zahl + Nomen",lv_en:"小5",lv_de:"A1",t:"family",ic:"family"},
+  {en:"He goes to school.",de:"Er geht zur Schule.",zh:"他去上學。",p_en:"S + go to + place",p_de:"S + gehen + zu + Ort",lv_en:"小5",lv_de:"A1",t:"school",ic:"school"},
+  {en:"We drink water.",de:"Wir trinken Wasser.",zh:"我們喝水。",p_en:"S + verb + noun",p_de:"S + Verb + Akk.",lv_en:"小5",lv_de:"A1",t:"food",ic:"water"},
+  {en:"Is this your bag?",de:"Ist das deine Tasche?",zh:"這是你的包嗎？",p_en:"Is this + your + noun?",p_de:"Ist das + Possessiv?",lv_en:"小5",lv_de:"A1",t:"school",ic:"book"},
+  {en:"She wears a red dress.",de:"Sie trägt ein rotes Kleid.",zh:"她穿著紅色洋裝。",p_en:"S + wear + adj. + noun",p_de:"S + Verb + Adj.-Endung + Nomen",lv_en:"小5",lv_de:"A1",t:"daily",ic:"heart"},
+  {en:"Do you want some water?",de:"Möchtest du etwas Wasser?",zh:"你要喝水嗎？",p_en:"Do you want + noun?",p_de:"Möchtest du + Akk.?",lv_en:"小5",lv_de:"A1",t:"food",ic:"water"},
+  {en:"She is my best friend.",de:"Sie ist meine beste Freundin.",zh:"她是我最好的朋友。",p_en:"S + be + possessive + noun",p_de:"S + sein + Possessiv + Nomen",lv_en:"小5",lv_de:"A1",t:"family",ic:"heart"},
+  {en:"The cat is under the table.",de:"Die Katze ist unter dem Tisch.",zh:"貓咪在桌子下面。",p_en:"S + be + preposition",p_de:"S + sein + Präp. + Dat.",lv_en:"小5",lv_de:"A1",t:"nature",ic:"cat"},
+  {en:"They play soccer after school.",de:"Sie spielen nach der Schule Fußball.",zh:"他們放學後踢足球。",p_en:"S + verb + after school",p_de:"S + Verb + nach + Dat.",lv_en:"小6",lv_de:"A1",t:"school",ic:"ball"},
+  {en:"He is good at math.",de:"Er ist gut in Mathe.",zh:"他擅長數學。",p_en:"be good at + noun",p_de:"sein + gut + in + Dat.",lv_en:"小6",lv_de:"A1",t:"school",ic:"school"},
+  {en:"We go to school by bus.",de:"Wir fahren mit dem Bus zur Schule.",zh:"我們搭公車上學。",p_en:"go by + vehicle",p_de:"fahren mit + Dat.",lv_en:"小6",lv_de:"A1",t:"daily",ic:"bus"},
+  {en:"She always helps others.",de:"Sie hilft immer anderen.",zh:"她總是幫助別人。",p_en:"always + verb",p_de:"immer + Verb + Dat.",lv_en:"小6",lv_de:"A1",t:"family",ic:"heart"},
+  {en:"He visited his grandma.",de:"Er hat seine Oma besucht.",zh:"他去拜訪了他的奶奶。",p_en:"past tense: visited",p_de:"Perfekt: haben + Partizip",lv_en:"小6",lv_de:"A2",t:"family",ic:"family"},
+  {en:"Did you eat breakfast?",de:"Hast du gefrühstückt?",zh:"你吃早餐了嗎？",p_en:"Did + S + verb?",p_de:"Perfekt-Frage",lv_en:"小6",lv_de:"A2",t:"food",ic:"meal"},
+  {en:"She doesn't like rain.",de:"Sie mag keinen Regen.",zh:"她不喜歡下雨。",p_en:"doesn't + verb",p_de:"mögen + kein + Akk.",lv_en:"小6",lv_de:"A1",t:"nature",ic:"rain"},
+  {en:"I bought a new book.",de:"Ich habe ein neues Buch gekauft.",zh:"我買了一本新書。",p_en:"bought = buy (past)",p_de:"Perfekt: kaufen",lv_en:"小6",lv_de:"A2",t:"school",ic:"book"},
+  {en:"We saw a big tree.",de:"Wir haben einen großen Baum gesehen.",zh:"我們看到了一棵大樹。",p_en:"saw = see (past)",p_de:"Perfekt: sehen",lv_en:"小6",lv_de:"A2",t:"nature",ic:"tree"},
+  {en:"The cat slept all day.",de:"Die Katze hat den ganzen Tag geschlafen.",zh:"這隻貓睡了一整天。",p_en:"past tense + time",p_de:"Perfekt + Zeitangabe",lv_en:"小6",lv_de:"A2",t:"nature",ic:"cat"},
+  {en:"She is taller than me.",de:"Sie ist größer als ich.",zh:"她比我高。",p_en:"adj. + -er + than",p_de:"Komparativ + als",lv_en:"小6",lv_de:"A2",t:"daily",ic:"family"},
+  {en:"He walked to the store.",de:"Er ist zum Geschäft gegangen.",zh:"他步行去商店。",p_en:"walked = walk (past)",p_de:"Perfekt: sein + gehen",lv_en:"小6",lv_de:"A2",t:"daily",ic:"shop"},
+  {en:"They cooked dinner together.",de:"Sie haben zusammen Abendessen gekocht.",zh:"他們一起煮晚餐。",p_en:"cooked = cook (past)",p_de:"Perfekt: kochen",lv_en:"小6",lv_de:"A2",t:"food",ic:"meal"},
+  {en:"I like summer more than winter.",de:"Ich mag den Sommer lieber als den Winter.",zh:"我比較喜歡夏天。",p_en:"like X more than Y",p_de:"lieber + als",lv_en:"小6",lv_de:"A2",t:"daily",ic:"sun"},
+  {en:"The dog ran very fast.",de:"Der Hund ist sehr schnell gelaufen.",zh:"那隻狗跑得很快。",p_en:"ran = run (past)",p_de:"Perfekt: sein + laufen",lv_en:"小6",lv_de:"A2",t:"nature",ic:"dog"},
+  {en:"We had a picnic yesterday.",de:"Wir hatten gestern ein Picknick.",zh:"我們昨天去野餐。",p_en:"had = have (past)",p_de:"Präteritum: hatten",lv_en:"小6",lv_de:"A2",t:"family",ic:"park"},
+  {en:"He doesn't eat vegetables.",de:"Er isst kein Gemüse.",zh:"他不吃蔬菜。",p_en:"doesn't + verb",p_de:"S + Verb + kein + Akk.",lv_en:"小6",lv_de:"A1",t:"food",ic:"food"},
+  {en:"Can you speak English?",de:"Kannst du Englisch sprechen?",zh:"你會說英文嗎？",p_en:"Can + S + verb?",p_de:"können + S + Infinitiv?",lv_en:"小6",lv_de:"A1",t:"school",ic:"school"},
+  {en:"She sang a pretty song.",de:"Sie hat ein schönes Lied gesungen.",zh:"她唱了一首好聽的歌。",p_en:"sang = sing (past)",p_de:"Perfekt: singen",lv_en:"小6",lv_de:"A2",t:"daily",ic:"heart"},
+  {en:"Is the park far from here?",de:"Ist der Park weit von hier?",zh:"公園離這裡遠嗎？",p_en:"Is + S + adj.?",p_de:"Ist + S + Adj.?",lv_en:"小6",lv_de:"A1",t:"travel",ic:"park"},
+  {en:"She loves eating ice cream.",de:"Sie isst sehr gern Eis.",zh:"她很喜歡吃冰淇淋。",p_en:"loves + verb-ing",p_de:"Verb + sehr gern + Akk.",lv_en:"小6",lv_de:"A1",t:"food",ic:"food"},
+  {en:"He plays the piano well.",de:"Er spielt gut Klavier.",zh:"他鋼琴彈得很好。",p_en:"S + verb + adv.",p_de:"S + Verb + Adv. + Nomen",lv_en:"小6",lv_de:"A1",t:"school",ic:"star"},
+  {en:"My dad cooks on weekends.",de:"Mein Vater kocht am Wochenende.",zh:"我爸爸週末做飯。",p_en:"S + verb + time",p_de:"S + Verb + am + Zeit",lv_en:"小6",lv_de:"A1",t:"food",ic:"meal"},
+  {en:"The store opens at nine.",de:"Das Geschäft öffnet um neun.",zh:"商店九點開門。",p_en:"S + open + at + time",p_de:"S + Verb + um + Uhrzeit",lv_en:"小6",lv_de:"A1",t:"daily",ic:"shop"},
+  {en:"She learned to ride a bike.",de:"Sie hat Fahrrad fahren gelernt.",zh:"她學會了騎腳踏車。",p_en:"learned + to + verb",p_de:"Perfekt: lernen + Inf.",lv_en:"小6",lv_de:"A2",t:"daily",ic:"run"},
+  {en:"He can swim very well.",de:"Er kann sehr gut schwimmen.",zh:"他游泳游得很好。",p_en:"can + verb + adv.",p_de:"können + Adv. + Inf.",lv_en:"國1",lv_de:"A2",t:"daily",ic:"swim"},
+  {en:"We should drink more water.",de:"Wir sollten mehr Wasser trinken.",zh:"我們應該多喝水。",p_en:"should + verb",p_de:"sollen (Konj. II) + Inf.",lv_en:"國1",lv_de:"A2",t:"daily",ic:"water"},
+  {en:"I want to be a doctor.",de:"Ich möchte Arzt werden.",zh:"我想成為一名醫生。",p_en:"want to be + noun",p_de:"möchten + Beruf + werden",lv_en:"國1",lv_de:"A2",t:"school",ic:"school"},
+  {en:"She is watching TV now.",de:"Sie sieht gerade fern.",zh:"她現在正在看電視。",p_en:"be + verb-ing (now)",p_de:"gerade + trennb. Verb",lv_en:"國1",lv_de:"A2",t:"daily",ic:"clock"},
+  {en:"Are you studying for the exam?",de:"Lernst du für die Prüfung?",zh:"你在為考試念書嗎？",p_en:"Are + S + verb-ing?",p_de:"Verb + S + für + Akk.?",lv_en:"國1",lv_de:"A2",t:"school",ic:"book"},
+  {en:"He isn't coming today.",de:"Er kommt heute nicht.",zh:"他今天不來了。",p_en:"isn't + verb-ing",p_de:"Verb + nicht",lv_en:"國1",lv_de:"A1",t:"daily",ic:"clock"},
+  {en:"I got up at seven.",de:"Ich bin um sieben aufgestanden.",zh:"我七點起床。",p_en:"got up = get up (past)",p_de:"Perfekt: aufstehen",lv_en:"國1",lv_de:"A2",t:"daily",ic:"clock"},
+  {en:"She gave me a gift.",de:"Sie hat mir ein Geschenk gegeben.",zh:"她給了我一份禮物。",p_en:"gave = give (past)",p_de:"Perfekt + Dat. + Akk.",lv_en:"國1",lv_de:"A2",t:"family",ic:"heart"},
+  {en:"We had dinner at home.",de:"Wir haben zu Hause Abendessen gegessen.",zh:"我們在家吃晚餐。",p_en:"had = have (past) + place",p_de:"Perfekt + Ortsangabe",lv_en:"國1",lv_de:"A2",t:"food",ic:"home"},
+  {en:"He didn't go to school.",de:"Er ist nicht zur Schule gegangen.",zh:"他沒有去上學。",p_en:"didn't + base verb",p_de:"Perfekt + nicht",lv_en:"國1",lv_de:"A2",t:"school",ic:"school"},
+  {en:"The movie was exciting.",de:"Der Film war spannend.",zh:"這部電影很刺激。",p_en:"S + was + adj.",p_de:"Präteritum: war + Adj.",lv_en:"國1",lv_de:"A2",t:"daily",ic:"star"},
+  {en:"I will call you later.",de:"Ich rufe dich später an.",zh:"我待會打電話給你。",p_en:"will + verb (future)",p_de:"trennb. Verb: anrufen",lv_en:"國1",lv_de:"A2",t:"daily",ic:"phone"},
+  {en:"She will visit us tomorrow.",de:"Sie besucht uns morgen.",zh:"她明天會來拜訪我們。",p_en:"will + verb + time",p_de:"Verb + Akk. + Zeit (Futur)",lv_en:"國1",lv_de:"A1",t:"family",ic:"family"},
+  {en:"Will you come to the party?",de:"Kommst du zur Party?",zh:"你會來派對嗎？",p_en:"Will + S + verb?",p_de:"Verb + S + zu + Dat.?",lv_en:"國1",lv_de:"A1",t:"family",ic:"fun"},
+  {en:"I won't be late again.",de:"Ich werde nicht wieder zu spät kommen.",zh:"我不會再遲到了。",p_en:"won't + verb",p_de:"werden + nicht + Inf. (Futur)",lv_en:"國1",lv_de:"A2",t:"school",ic:"clock"},
+  {en:"He must finish his homework.",de:"Er muss seine Hausaufgaben machen.",zh:"他必須完成他的作業。",p_en:"must + verb",p_de:"müssen + Inf.",lv_en:"國1",lv_de:"A1",t:"school",ic:"book"},
+  {en:"The dog is sleeping now.",de:"Der Hund schläft gerade.",zh:"那隻狗現在正在睡覺。",p_en:"be + verb-ing (now)",p_de:"S + Verb + gerade",lv_en:"國1",lv_de:"A1",t:"nature",ic:"dog"},
+  {en:"We went to the beach.",de:"Wir sind zum Strand gegangen.",zh:"我們去了海邊。",p_en:"went = go (past)",p_de:"Perfekt: sein + gehen",lv_en:"國1",lv_de:"A2",t:"travel",ic:"water"},
+  {en:"Did she find her keys?",de:"Hat sie ihre Schlüssel gefunden?",zh:"她找到她的鑰匙了嗎？",p_en:"Did + S + base verb?",p_de:"Perfekt-Frage",lv_en:"國1",lv_de:"A2",t:"daily",ic:"home"},
+  {en:"She is afraid of spiders.",de:"Sie hat Angst vor Spinnen.",zh:"她怕蜘蛛。",p_en:"be afraid of + noun",p_de:"Angst haben vor + Dat.",lv_en:"國1",lv_de:"A2",t:"nature",ic:"tree"},
+  {en:"We need to leave now.",de:"Wir müssen jetzt gehen.",zh:"我們現在需要離開了。",p_en:"need + to + verb",p_de:"müssen + Adv. + Inf.",lv_en:"國1",lv_de:"A1",t:"daily",ic:"bus"},
+  {en:"They arrived at noon.",de:"Sie sind um Mittag angekommen.",zh:"他們在中午抵達。",p_en:"arrived at + time",p_de:"Perfekt: ankommen + Zeit",lv_en:"國1",lv_de:"A2",t:"travel",ic:"clock"},
+  {en:"I am reading a comic book.",de:"Ich lese gerade ein Comicbuch.",zh:"我正在看漫畫書。",p_en:"be + verb-ing",p_de:"gerade + Verb + Akk.",lv_en:"國1",lv_de:"A1",t:"daily",ic:"book"},
+  {en:"He looks tired today.",de:"Er sieht heute müde aus.",zh:"他今天看起來很累。",p_en:"look + adj.",p_de:"trennb. Verb: aussehen + Adj.",lv_en:"國1",lv_de:"A2",t:"daily",ic:"run"},
+  {en:"We should go to bed early.",de:"Wir sollten früh ins Bett gehen.",zh:"我們應該早點睡覺。",p_en:"should + verb",p_de:"sollen + früh + Inf.",lv_en:"國1",lv_de:"A2",t:"daily",ic:"clock"},
+  {en:"The flowers smell wonderful.",de:"Die Blumen duften wunderbar.",zh:"這些花聞起來很香。",p_en:"S + smell + adj.",p_de:"S + Verb + Adverb",lv_en:"國1",lv_de:"A2",t:"nature",ic:"tree"},
+  {en:"He likes hiking in the mountains.",de:"Er wandert gern in den Bergen.",zh:"他喜歡在山裡健行。",p_en:"like + verb-ing + place",p_de:"Verb + gern + in + Dat.",lv_en:"國1",lv_de:"A2",t:"nature",ic:"tree"},
+  {en:"She wants to travel the world.",de:"Sie möchte um die Welt reisen.",zh:"她想要環遊世界。",p_en:"want + to + verb",p_de:"möchten + Inf.",lv_en:"國1",lv_de:"A2",t:"travel",ic:"plane"},
+  {en:"It takes one hour by train.",de:"Es dauert eine Stunde mit dem Zug.",zh:"搭火車要一個小時。",p_en:"It takes + time + by",p_de:"Es dauert + Zeit + mit + Dat.",lv_en:"國1",lv_de:"A2",t:"travel",ic:"bus"},
+  {en:"They are playing soccer now.",de:"Sie spielen gerade Fußball.",zh:"他們現在正在踢足球。",p_en:"be + verb-ing",p_de:"gerade + Verb",lv_en:"國2",lv_de:"A1",t:"daily",ic:"ball"},
+  {en:"She told me a secret.",de:"Sie hat mir ein Geheimnis erzählt.",zh:"她告訴了我一個秘密。",p_en:"told = tell (past)",p_de:"Perfekt + Dat. + Akk.",lv_en:"國2",lv_de:"A2",t:"family",ic:"heart"},
+  {en:"He finished his homework early.",de:"Er hat seine Hausaufgaben früh fertig gemacht.",zh:"他很早就完成了作業。",p_en:"finished + time adv.",p_de:"Perfekt + Adv.",lv_en:"國2",lv_de:"A2",t:"school",ic:"book"},
+  {en:"I have been here before.",de:"Ich war schon einmal hier.",zh:"我以前來過這裡。",p_en:"have been + adv.",p_de:"Präteritum: war + schon einmal",lv_en:"國2",lv_de:"A2",t:"travel",ic:"plane"},
+  {en:"She has already eaten lunch.",de:"Sie hat schon Mittag gegessen.",zh:"她已經吃過午餐了。",p_en:"has already + past participle",p_de:"Perfekt + schon",lv_en:"國2",lv_de:"A2",t:"food",ic:"meal"},
+  {en:"Have you ever tried sushi?",de:"Hast du schon mal Sushi probiert?",zh:"你曾經吃過壽司嗎？",p_en:"Have + S + ever + pp?",p_de:"Perfekt-Frage + schon mal",lv_en:"國2",lv_de:"A2",t:"food",ic:"meal"},
+  {en:"He hasn't called me yet.",de:"Er hat mich noch nicht angerufen.",zh:"他還沒打電話給我。",p_en:"hasn't + pp + yet",p_de:"Perfekt + noch nicht",lv_en:"國2",lv_de:"A2",t:"daily",ic:"phone"},
+  {en:"We have visited ten countries.",de:"Wir haben zehn Länder besucht.",zh:"我們已經去過十個國家了。",p_en:"have + pp + object",p_de:"Perfekt: besuchen + Akk.",lv_en:"國2",lv_de:"A2",t:"travel",ic:"plane"},
+  {en:"I was reading when she called.",de:"Ich las, als sie anrief.",zh:"她打電話來時我正在看書。",p_en:"was + verb-ing + when",p_de:"Präteritum + als + Präteritum",lv_en:"國2",lv_de:"A2",t:"daily",ic:"book"},
+  {en:"They were laughing all night.",de:"Sie haben die ganze Nacht gelacht.",zh:"他們整晚都在笑。",p_en:"were + verb-ing + time",p_de:"Perfekt + die ganze + Zeit",lv_en:"國2",lv_de:"A2",t:"family",ic:"fun"},
+  {en:"This bag is the most expensive.",de:"Diese Tasche ist die teuerste.",zh:"這個包包是最貴的。",p_en:"the most + adj.",p_de:"Superlativ: die teuerste",lv_en:"國2",lv_de:"A2",t:"daily",ic:"shop"},
+  {en:"He runs faster than I do.",de:"Er läuft schneller als ich.",zh:"他跑得比我快。",p_en:"adv. + -er + than + clause",p_de:"Komparativ + als + Pron.",lv_en:"國2",lv_de:"A2",t:"daily",ic:"run"},
+  {en:"She is the best student here.",de:"Sie ist die beste Schülerin hier.",zh:"她是這裡最好的學生。",p_en:"the best + noun",p_de:"die beste + Nomen",lv_en:"國2",lv_de:"A2",t:"school",ic:"school"},
+  {en:"I have never seen snow.",de:"Ich habe noch nie Schnee gesehen.",zh:"我從來沒有看過雪。",p_en:"have never + pp",p_de:"Perfekt + noch nie",lv_en:"國2",lv_de:"A2",t:"nature",ic:"rain"},
+  {en:"She bought the cheapest one.",de:"Sie hat das billigste gekauft.",zh:"她買了最便宜的那個。",p_en:"the + superlative",p_de:"Superlativ + Perfekt",lv_en:"國2",lv_de:"A2",t:"daily",ic:"shop"},
+  {en:"He is too tired to walk.",de:"Er ist zu müde, um zu gehen.",zh:"他太累了，走不動。",p_en:"too + adj. + to + verb",p_de:"zu + Adj. + um zu + Inf.",lv_en:"國2",lv_de:"A2",t:"daily",ic:"run"},
+  {en:"This is the biggest park.",de:"Das ist der größte Park.",zh:"這是最大的公園。",p_en:"the biggest + noun",p_de:"der größte + Nomen",lv_en:"國2",lv_de:"A2",t:"travel",ic:"park"},
+  {en:"I feel happy when I sing.",de:"Ich bin glücklich, wenn ich singe.",zh:"當我唱歌時我感到快樂。",p_en:"feel + adj. + when",p_de:"sein + Adj. + wenn",lv_en:"國2",lv_de:"A2",t:"daily",ic:"heart"},
+  {en:"She spent all her money.",de:"Sie hat ihr ganzes Geld ausgegeben.",zh:"她花光了所有的錢。",p_en:"spent = spend (past)",p_de:"Perfekt: ausgeben",lv_en:"國2",lv_de:"A2",t:"daily",ic:"shop"},
+  {en:"He decided to study harder.",de:"Er hat sich entschieden, mehr zu lernen.",zh:"他決定更努力學習。",p_en:"decided + to + verb",p_de:"sich entscheiden + zu + Inf.",lv_en:"國2",lv_de:"A2",t:"school",ic:"book"},
+  {en:"I hope to see you soon.",de:"Ich hoffe, dich bald zu sehen.",zh:"我希望很快能見到你。",p_en:"hope + to + verb",p_de:"hoffen + zu + Inf.",lv_en:"國2",lv_de:"A2",t:"family",ic:"heart"},
+  {en:"She enjoys walking in the rain.",de:"Sie geht gern im Regen spazieren.",zh:"她喜歡在雨中散步。",p_en:"enjoy + verb-ing",p_de:"Verb + gern + im + Dat.",lv_en:"國2",lv_de:"A2",t:"nature",ic:"rain"},
+  {en:"He took a photo of the sunset.",de:"Er hat ein Foto vom Sonnenuntergang gemacht.",zh:"他拍了一張夕陽的照片。",p_en:"took = take (past)",p_de:"Perfekt: machen + von + Dat.",lv_en:"國2",lv_de:"A2",t:"nature",ic:"sun"},
+  {en:"I find math very interesting.",de:"Ich finde Mathe sehr interessant.",zh:"我覺得數學非常有趣。",p_en:"find + O + adj.",p_de:"finden + Akk. + Adj.",lv_en:"國2",lv_de:"A2",t:"school",ic:"school"},
+  {en:"She forgot to bring her lunch.",de:"Sie hat vergessen, ihr Mittagessen mitzunehmen.",zh:"她忘記帶午餐了。",p_en:"forgot + to + verb",p_de:"Perfekt + zu + Inf.",lv_en:"國2",lv_de:"A2",t:"school",ic:"meal"},
+  {en:"He is the tallest in his class.",de:"Er ist der größte in seiner Klasse.",zh:"他是班上最高的學生。",p_en:"the + superlative + in",p_de:"Superlativ + in + Dat.",lv_en:"國2",lv_de:"A2",t:"school",ic:"school"},
+  {en:"We sang songs around the fire.",de:"Wir haben Lieder am Feuer gesungen.",zh:"我們圍著火堆唱歌。",p_en:"sang = sing (past)",p_de:"Perfekt + an + Dat.",lv_en:"國2",lv_de:"A2",t:"family",ic:"star"},
+  {en:"I haven't seen that movie.",de:"Ich habe diesen Film nicht gesehen.",zh:"我還沒看過那部電影。",p_en:"haven't + pp",p_de:"Perfekt + nicht",lv_en:"國2",lv_de:"A2",t:"daily",ic:"star"},
+  {en:"If it rains, stay inside.",de:"Wenn es regnet, bleib drinnen.",zh:"如果下雨，就待在室內。",p_en:"If + present, imperative",p_de:"Wenn + Nebensatz, Imperativ",lv_en:"國3",lv_de:"A2",t:"daily",ic:"rain"},
+  {en:"She has never tried sushi.",de:"Sie hat noch nie Sushi probiert.",zh:"她從來沒有嚐過壽司。",p_en:"has never + pp",p_de:"Perfekt + noch nie",lv_en:"國3",lv_de:"A2",t:"food",ic:"meal"},
+  {en:"I wish I had more time.",de:"Ich wünschte, ich hätte mehr Zeit.",zh:"我希望我有更多時間。",p_en:"I wish + S + past",p_de:"Konjunktiv II: hätte",lv_en:"國3",lv_de:"A2",t:"daily",ic:"wish"},
+  {en:"He is too busy to help.",de:"Er ist zu beschäftigt, um zu helfen.",zh:"他太忙了，沒辦法幫忙。",p_en:"too + adj. + to + verb",p_de:"zu + Adj. + um zu + Inf.",lv_en:"國3",lv_de:"A2",t:"daily",ic:"clock"},
+  {en:"We had a great time there.",de:"Wir hatten dort eine tolle Zeit.",zh:"我們在那裡玩得很開心。",p_en:"had a great time + adv.",p_de:"Präteritum: hatten + Akk.",lv_en:"國3",lv_de:"A2",t:"travel",ic:"fun"},
+  {en:"If I were you, I'd go.",de:"Wenn ich du wäre, würde ich gehen.",zh:"如果我是你，我會去。",p_en:"If I were + S, I'd + verb",p_de:"Konj. II: wäre / würde",lv_en:"國3",lv_de:"A2",t:"daily",ic:"wish"},
+  {en:"She suggested going by train.",de:"Sie hat vorgeschlagen, mit dem Zug zu fahren.",zh:"她建議搭火車去。",p_en:"suggested + verb-ing",p_de:"Perfekt: vorschlagen + zu + Inf.",lv_en:"國3",lv_de:"A2",t:"travel",ic:"bus"},
+  {en:"He asked me to wait.",de:"Er hat mich gebeten zu warten.",zh:"他叫我等一下。",p_en:"asked + O + to + verb",p_de:"Perfekt: bitten + zu + Inf.",lv_en:"國3",lv_de:"A2",t:"daily",ic:"clock"},
+  {en:"She made me laugh.",de:"Sie hat mich zum Lachen gebracht.",zh:"她讓我大笑。",p_en:"make + O + base verb",p_de:"bringen + zu + Nomen",lv_en:"國3",lv_de:"A2",t:"family",ic:"fun"},
+  {en:"The book was written in 1990.",de:"Das Buch wurde 1990 geschrieben.",zh:"這本書寫於1990年。",p_en:"was + pp (passive voice)",p_de:"Passiv: wurde + Partizip",lv_en:"國3",lv_de:"A2",t:"school",ic:"book"},
+  {en:"English is spoken worldwide.",de:"Englisch wird weltweit gesprochen.",zh:"英語在全世界通用。",p_en:"is + pp (passive voice)",p_de:"Passiv: wird + Partizip",lv_en:"國3",lv_de:"A2",t:"school",ic:"star"},
+  {en:"He said that he was tired.",de:"Er sagte, dass er müde sei.",zh:"他說他很累。",p_en:"said that + clause",p_de:"sagen, dass + Konj. I",lv_en:"國3",lv_de:"A2",t:"daily",ic:"run"},
+  {en:"I don't know where she went.",de:"Ich weiß nicht, wohin sie gegangen ist.",zh:"我不知道她去了哪裡。",p_en:"don't know + wh-clause",p_de:"wissen + wohin-Nebensatz",lv_en:"國3",lv_de:"A2",t:"daily",ic:"home"},
+  {en:"If I had wings, I'd fly.",de:"Wenn ich Flügel hätte, würde ich fliegen.",zh:"如果我有翅膀，我就會飛。",p_en:"If I had + noun, I'd + verb",p_de:"Konjunktiv II: hätte / würde",lv_en:"國3",lv_de:"A2",t:"nature",ic:"wish"},
+  {en:"She wishes she could travel more.",de:"Sie wünschte, sie könnte mehr reisen.",zh:"她希望她能多旅行。",p_en:"wishes + S + could + verb",p_de:"wünschte + Konj. II: könnte",lv_en:"國3",lv_de:"A2",t:"travel",ic:"plane"},
+  {en:"He has studied English for years.",de:"Er lernt seit Jahren Englisch.",zh:"他已經學了多年英文。",p_en:"has + pp + for + time",p_de:"Präsens + seit + Zeit",lv_en:"國3",lv_de:"A2",t:"school",ic:"book"},
+  {en:"He kept on walking.",de:"Er ist weitergegangen.",zh:"他繼續走著。",p_en:"keep on + verb-ing",p_de:"Perfekt: weitergehen",lv_en:"國3",lv_de:"A2",t:"daily",ic:"run"},
+  {en:"She prefers reading to watching TV.",de:"Sie liest lieber, als fernzusehen.",zh:"她比起看電視更喜歡看書。",p_en:"prefer + verb-ing + to + verb-ing",p_de:"lieber + als + zu + Inf.",lv_en:"國3",lv_de:"A2",t:"daily",ic:"book"},
+  {en:"He is said to be very talented.",de:"Man sagt, dass er sehr talentiert ist.",zh:"據說他非常有才華。",p_en:"is said + to be (passive)",p_de:"Man sagt, dass + Hauptsatz",lv_en:"國3",lv_de:"A2",t:"school",ic:"star"},
+  {en:"The bridge was built in 1980.",de:"Die Brücke wurde 1980 gebaut.",zh:"這座橋建於1980年。",p_en:"was + pp + in + year",p_de:"Passiv + Jahreszahl",lv_en:"國3",lv_de:"A2",t:"school",ic:"school"},
+  {en:"I regret not studying harder.",de:"Ich bereue, nicht mehr gelernt zu haben.",zh:"我後悔沒有更努力念書。",p_en:"regret + not + verb-ing",p_de:"bereuen + nicht + zu haben + Partizip",lv_en:"國3",lv_de:"A2",t:"school",ic:"book"},
+  {en:"He seems to have forgotten it.",de:"Er scheint es vergessen zu haben.",zh:"他似乎忘記了這件事。",p_en:"seem + to have + pp",p_de:"scheinen + zu haben + Partizip",lv_en:"國3",lv_de:"A2",t:"daily",ic:"clock"},
+  {en:"She is known for her kindness.",de:"Sie ist bekannt für ihre Freundlichkeit.",zh:"她以善良著稱。",p_en:"is known for + noun",p_de:"bekannt sein für + Akk.",lv_en:"國3",lv_de:"A2",t:"family",ic:"heart"},
+  {en:"Not knowing the answer, he was silent.",de:"Da er die Antwort nicht wusste, schwieg er.",zh:"不知道答案，他保持沉默。",p_en:"Not + verb-ing, S + verb",p_de:"Da + Nebensatz",lv_en:"國3",lv_de:"A2",t:"school",ic:"book"},
+  {en:"Having finished his work, he left.",de:"Nachdem er seine Arbeit beendet hatte, ging er.",zh:"完成工作後，他離開了。",p_en:"Having + pp, S + verb",p_de:"Nachdem + Plusquamperfekt",lv_en:"國3",lv_de:"A2",t:"daily",ic:"run"},
+  {en:"She had the report finished by noon.",de:"Sie hat den Bericht bis Mittag fertig gemacht.",zh:"她讓報告在中午前完成了。",p_en:"had + O + pp",p_de:"Perfekt + bis + Zeit",lv_en:"國3",lv_de:"A2",t:"school",ic:"book"},
+  {en:"I wonder whether she will come.",de:"Ich frage mich, ob sie kommt.",zh:"我不確定她是否會來。",p_en:"wonder + whether-clause",p_de:"sich fragen + ob-Nebensatz",lv_en:"國3",lv_de:"A2",t:"social",ic:"fun"},
 ];
+
+// ── Language state & helpers ──
+let lang = localStorage.getItem("ep-lang-v1") === "de" ? "de" : "en";
+function txt(item) { return lang === "de" ? item.de : item.en; }
+function pat(item) { return lang === "de" ? item.p_de : item.p_en; }
+function lv(item)  { return lang === "de" ? item.lv_de : item.lv_en; }
+function BADGES()  { return lang === "de" ? BADGES_DE : BADGES_EN; }
 
 // ── TTS ──
 const synth = window.speechSynthesis;
@@ -622,9 +648,10 @@ let voices = [], current = null, showT = false, pool = [], used = new Set();
 let history = [], historyIdx = -1;
 
 function loadVoices() {
-  voices = synth ? synth.getVoices().filter(v => v.lang.startsWith("en")) : [];
+  const prefix = lang === "de" ? "de" : "en";
+  voices = synth ? synth.getVoices().filter(v => v.lang.startsWith(prefix)) : [];
   const s = document.getElementById("vsel");
-  if (!voices.length) { setTimeout(loadVoices, 300); return; }
+  if (!voices.length) { s.innerHTML = "<option>無可用語音</option>"; return; }
   s.innerHTML = "";
   voices.forEach((v, i) => {
     const o = document.createElement("option");
@@ -632,19 +659,27 @@ function loadVoices() {
     o.textContent = v.name + (v.localService ? " ★" : "");
     s.appendChild(o);
   });
-  const p = voices.findIndex(v => /Samantha|Karen|Daniel|Google US|Zira|David/i.test(v.name));
+  const preferred = lang === "de"
+    ? /Anna|Petra|Markus|Google Deutsch|Hedda|Stefan/i
+    : /Samantha|Karen|Daniel|Google US|Zira|David/i;
+  const p = voices.findIndex(v => preferred.test(v.name));
   if (p >= 0) s.value = p;
 }
 if (synth) { synth.onvoiceschanged = loadVoices; loadVoices(); }
 
-function applyFilter() {
-  const lv = document.getElementById("lsel").value;
+function recomputePool() {
+  const lvVal = document.getElementById("lsel").value;
   const tp = document.getElementById("tsel").value;
-  pool = ALL.filter(s => (lv === "all" || s.lv === lv) && (tp === "all" || s.t === tp));
+  const lvField = lang === "de" ? "lv_de" : "lv_en";
+  pool = SENTENCES.filter(s => (lvVal === "all" || s[lvField] === lvVal) && (tp === "all" || s.t === tp));
+  document.getElementById("cnt").textContent = pool.length + " 句";
+}
+
+function applyFilter() {
+  recomputePool();
   used = new Set();
   history = [];
   historyIdx = -1;
-  document.getElementById("cnt").textContent = pool.length + " 句";
   document.getElementById("prevbtn").disabled = true;
   next();
 }
@@ -682,14 +717,15 @@ function clearHi() {
 
 function showSent(item) {
   current = item;
-  renderWords(item.en);
-  document.getElementById("pat").textContent = item.p || "";
+  renderWords(txt(item));
+  document.getElementById("pat").textContent = pat(item) || "";
   document.getElementById("trans").textContent = item.zh || "";
-  document.getElementById("trans").style.display = showT ? "block" : "none";
+  document.getElementById("trans").style.visibility = showT ? "visible" : "hidden";
   document.getElementById("ttbtn").textContent = showT ? "[ 隱藏中文 ]" : "[ 顯示中文 ]";
-  const bd = BADGES[item.lv] || { bg: "rgba(255,255,255,0.08)", c: "#8a7050" };
+  const itemLv = lv(item);
+  const bd = BADGES()[itemLv] || { bg: "rgba(255,255,255,0.08)", c: "#8a7050" };
   const b = document.getElementById("badge");
-  b.textContent = item.lv;
+  b.textContent = itemLv;
   b.style.background = bd.bg;
   b.style.color = bd.c;
   document.getElementById("illus").innerHTML = SVGS[item.ic] || SVGS["star"];
@@ -698,7 +734,7 @@ function showSent(item) {
 function toggleT() {
   showT = !showT;
   if (current) {
-    document.getElementById("trans").style.display = showT ? "block" : "none";
+    document.getElementById("trans").style.visibility = showT ? "visible" : "hidden";
     document.getElementById("ttbtn").textContent = showT ? "[ 隱藏中文 ]" : "[ 顯示中文 ]";
   }
 }
@@ -722,9 +758,10 @@ function prev() {
   document.getElementById("prevbtn").disabled = historyIdx <= 0;
 }
 
-function utter(txt, cb) {
+function utter(text, cb) {
   if (!synth) return;
-  const u = new SpeechSynthesisUtterance(txt);
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang === "de" ? "de-DE" : "en-US";
   const s = document.getElementById("vsel");
   if (voices[s.value]) u.voice = voices[s.value];
   u.rate = parseFloat(document.getElementById("spd").value);
@@ -737,14 +774,14 @@ function speakAll() {
   if (!synth || !current) return;
   synth.cancel();
   clearHi();
-  utter(current.en);
+  utter(txt(current));
 }
 
 function speakWBW() {
   if (!synth || !current) return;
   synth.cancel();
   clearHi();
-  const words = current.en.split(/\s+/);
+  const words = txt(current).split(/\s+/);
   const spans = document.querySelectorAll(".word");
   let i = 0;
   function go() {
@@ -813,8 +850,33 @@ self.addEventListener("fetch", e => {
   navigator.serviceWorker.register(swURL).catch(() => {});
 }
 
+// ── Language switching ──
+function setLang(L) {
+  lang = L;
+  try { localStorage.setItem("ep-lang-v1", L); } catch(e) {}
+  document.querySelectorAll(".lt").forEach(t => {
+    t.classList.toggle("active", t.dataset.lang === L);
+  });
+  const lsel = document.getElementById("lsel");
+  lsel.innerHTML = LEVELS[L].map(([v,t]) => `<option value="${v}">${t}</option>`).join("");
+  document.getElementById("subt").textContent = SUBTITLES[L];
+  if (synth) synth.cancel();
+  loadVoices();
+  recomputePool();
+  if (current) {
+    showSent(current);
+    document.getElementById("prevbtn").disabled = historyIdx <= 0;
+  } else {
+    applyFilter();
+  }
+}
+
+document.querySelectorAll(".lt").forEach(tab => {
+  tab.addEventListener("click", () => setLang(tab.dataset.lang));
+});
+
 // ── Init ──
-applyFilter();
+setLang(lang);
 </script>
 </body>
 </html>
