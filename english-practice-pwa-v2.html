@@ -671,12 +671,21 @@ function loadVoices() {
     o.textContent = v.name + (v.localService ? " ★" : "");
     s.appendChild(o);
   });
-  const preferred = lang === "de"
-    ? /Anna|Petra|Markus|Google Deutsch|Hedda|Stefan/i
-    : /Samantha|Karen|Daniel|Google US|Zira|David/i;
-  const p = voices.findIndex(v => preferred.test(v.name));
+  const savedName = localStorage.getItem("ep-voice-v2-" + lang);
+  let p = savedName ? voices.findIndex(v => v.name === savedName) : -1;
+  if (p < 0) {
+    const preferred = lang === "de"
+      ? /Anna|Petra|Markus|Google Deutsch|Hedda|Stefan/i
+      : /Samantha|Karen|Daniel|Google US|Zira|David/i;
+    p = voices.findIndex(v => preferred.test(v.name));
+  }
   if (p >= 0) s.value = p;
 }
+
+document.getElementById("vsel").addEventListener("change", function() {
+  const v = voices[this.value];
+  if (v) try { localStorage.setItem("ep-voice-v2-" + lang, v.name); } catch(e) {}
+});
 if (synth) { synth.onvoiceschanged = loadVoices; loadVoices(); }
 
 function recomputePool() {
