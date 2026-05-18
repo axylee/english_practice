@@ -19,6 +19,7 @@
   --border: #3d2e14;
   --accent-warm: #e8a020;
   --accent-cool: #5b8dee;
+  --accent-green: #4ecb8a;
   --text: #f0e8d8;
   --muted: #8a7050;
   --safe-top: env(safe-area-inset-top, 0px);
@@ -118,6 +119,7 @@ body {
   transition: opacity 0.2s;
 }
 
+.card-v0::before { background: var(--accent-green); }
 .card-v1::before { background: var(--accent-warm); }
 .card-v2::before { background: var(--accent-cool); }
 
@@ -127,6 +129,9 @@ body {
 
 .card:hover {
   border-color: #5a4020;
+}
+.card-v0:hover {
+  border-color: #2a5a3a;
 }
 .card-v2:hover {
   border-color: #2a4070;
@@ -147,6 +152,12 @@ body {
   padding: 4px 10px;
   border-radius: 20px;
   font-weight: 600;
+}
+
+.card-v0 .card-tag {
+  background: rgba(78,203,138,0.15);
+  color: var(--accent-green);
+  border: 1px solid rgba(78,203,138,0.25);
 }
 
 .card-v1 .card-tag {
@@ -181,6 +192,7 @@ body {
   line-height: 1.2;
 }
 
+.card-v0 .card-title span { color: var(--accent-green); }
 .card-v1 .card-title span { color: var(--accent-warm); }
 .card-v2 .card-title span { color: var(--accent-cool); }
 
@@ -202,6 +214,12 @@ body {
   padding: 3px 9px;
   border-radius: 20px;
   font-family: 'JetBrains Mono', monospace;
+}
+
+.card-v0 .pill {
+  background: rgba(78,203,138,0.08);
+  color: rgba(78,203,138,0.7);
+  border: 1px solid rgba(78,203,138,0.15);
 }
 
 .card-v1 .pill {
@@ -279,16 +297,37 @@ body {
 
   <div class="cards">
 
+    <a class="card card-v0" href="english-practice-pwa-v0.html">
+      <div class="card-top">
+        <span class="card-tag">V0 · 入門版</span>
+        <span class="card-arrow">→</span>
+      </div>
+      <div class="card-title"><span>V0</span></div>
+      <div class="card-desc">字母、數字、親屬、動詞，A1 入門必備詞彙，網格與單卡兩種練習模式。</div>
+      <div class="card-pills">
+        <span class="pill">A1 入門</span>
+        <span class="pill">86 項詞彙</span>
+        <span class="pill">網格 / 單卡</span>
+        <span class="pill">朗讀全部</span>
+      </div>
+    </a>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-text">or</span>
+      <div class="divider-line"></div>
+    </div>
+
     <a class="card card-v1" href="english-practice-pwa-v1.html">
       <div class="card-top">
         <span class="card-tag">V1 · 基礎版</span>
         <span class="card-arrow">→</span>
       </div>
       <div class="card-title"><span>V1</span></div>
-      <div class="card-desc">國小五年級到國中三年級，160 句隨機練習，適合兒童與初學者打好英文基礎。</div>
+      <div class="card-desc">國小五年級到國中三年級，132 句中英德對照，適合兒童與初學者打好英文基礎。</div>
       <div class="card-pills">
         <span class="pill">小5 ─ 國3</span>
-        <span class="pill">160 句</span>
+        <span class="pill">132 句</span>
         <span class="pill">整句 / 逐字朗讀</span>
         <span class="pill">中文對照</span>
       </div>
@@ -306,10 +345,10 @@ body {
         <span class="card-arrow">→</span>
       </div>
       <div class="card-title"><span>V2</span></div>
-      <div class="card-desc">國中三年級到高中三年級，160 句進階練習，涵蓋倒裝句、假設語氣、學術論述等高階句型。</div>
+      <div class="card-desc">國中三年級到高中三年級，161 句中英德對照，涵蓋倒裝句、假設語氣、學術論述等高階句型。</div>
       <div class="card-pills">
         <span class="pill">國3 ─ 高3</span>
-        <span class="pill">160 句</span>
+        <span class="pill">161 句</span>
         <span class="pill">整句 / 逐字朗讀</span>
         <span class="pill">中文對照</span>
       </div>

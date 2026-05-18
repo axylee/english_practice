@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="入門">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d1810">
+<title>English / German Practice V0</title>
+
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22English%20%2F%20German%20Practice%20V0%22%2C%22short_name%22%3A%22入門%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230d1810%22%2C%22theme_color%22%3A%22%230d1810%22%2C%22orientation%22%3A%22portrait%22%7D">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230d1810'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%234ecb8a'%3EAa%3C/text%3E%3C/svg%3E">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+:root {
+  --bg: #0d1810;
+  --surface: #142218;
+  --surface2: #1a2a1f;
+  --border: #243524;
+  --accent: #4ecb8a;
+  --accent2: #7ed8a8;
+  --text: #e8f0e8;
+  --muted: #6a8a78;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overscroll-behavior: none; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', 'Noto Sans TC', sans-serif;
+  padding: calc(var(--safe-top) + 10px) 14px calc(var(--safe-bottom) + 14px);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app { max-width: 560px; margin: 0 auto; }
+
+.header {
+  text-align: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.header h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(16px, 4vw, 20px);
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.lt {
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.15s;
+  padding: 2px 2px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.lt.active { color: var(--accent); }
+.lt:hover { color: var(--accent2); }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+.panel-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-row { display: flex; gap: 10px; align-items: stretch; }
+.filter-row select {
+  flex: 1;
+  height: 42px;
+  padding: 0 30px 0 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a8a78' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.mode-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mode-toggle button {
+  height: 42px;
+  padding: 0 12px;
+  background: var(--bg);
+  color: var(--muted);
+  border: none;
+  cursor: pointer;
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', sans-serif;
+  font-size: 13px;
+  transition: background 0.12s, color 0.12s;
+}
+.mode-toggle button.active {
+  background: rgba(78,203,138,0.18);
+  color: var(--accent);
+}
+.mode-toggle button:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+
+/* ── Grid view ── */
+.grid {
+  display: grid;
+  gap: 6px;
+  max-height: 56vh;
+  overflow-y: auto;
+  padding: 2px;
+}
+.grid.cat-letter, .grid.cat-number {
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+}
+.grid.cat-family, .grid.cat-verb {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+}
+.grid-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.1s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.grid-card:hover { border-color: var(--accent); }
+.grid-card:active { transform: scale(0.96); }
+.grid-card.hi {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+.grid-card .g-word {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+.grid.cat-letter .g-word, .grid.cat-number .g-word { font-size: 24px; }
+.grid-card .g-zh {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.grid-card.hi .g-zh { color: rgba(0,0,0,0.65); }
+
+/* ── Single view ── */
+.single-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  background: rgba(78,203,138,0.18);
+  color: var(--accent);
+}
+.cnt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.single-word {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: clamp(40px, 12vw, 72px);
+  text-align: center;
+  color: var(--text);
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-break: break-word;
+  cursor: pointer;
+}
+.single-word.hi { color: var(--accent); }
+.single-ctx {
+  font-size: 15px;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 4px;
+  min-height: 26px;
+  visibility: hidden;
+}
+.single-ctx.show { visibility: visible; }
+.single-ctx .verb-hi {
+  color: var(--accent);
+  font-weight: 700;
+}
+.trans {
+  font-size: 15px;
+  color: var(--accent2);
+  text-align: center;
+  margin-top: 10px;
+  line-height: 1.6;
+  min-height: 26px;
+  visibility: hidden;
+}
+.ttbtn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--accent);
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', sans-serif;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 6px 0;
+  min-height: 36px;
+}
+.ttbtn[disabled] { color: var(--muted); cursor: default; text-decoration: none; }
+
+/* ── Controls ── */
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.ctrl-row label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 40px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+select.vsel {
+  flex: 1;
+  height: 42px;
+  padding: 0 30px 0 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', sans-serif;
+  font-size: 13px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a8a78' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+input[type=range] {
+  flex: 1;
+  height: 36px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.sv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent2);
+  min-width: 34px;
+  text-align: right;
+}
+
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+.btn-grid.three { grid-template-columns: repeat(3, 1fr); }
+.btn {
+  height: 48px;
+  border-radius: 10px;
+  font-size: clamp(12px, 3vw, 14px);
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', sans-serif;
+  cursor: pointer;
+  transition: all 0.12s;
+  border: 1px solid var(--border);
+  font-weight: 700;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.btn:active { transform: scale(0.95); }
+.btn:disabled { opacity: 0.28; cursor: default; transform: none; }
+.btn-speak {
+  background: rgba(78,203,138,0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-speak:active { background: rgba(78,203,138,0.28); }
+.btn-rand {
+  background: rgba(126,216,168,0.1);
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+.btn-stop {
+  background: var(--surface2);
+  color: var(--muted);
+  border-color: var(--border);
+}
+.btn-stop:active { background: var(--border); color: var(--text); }
+.btn-prev, .btn-next {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-prev:active:not(:disabled), .btn-next:active { background: var(--border); }
+
+.hint {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* ── Install ── */
+#install-banner {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: rgba(78,203,138,0.1);
+  border: 1px solid rgba(78,203,138,0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+#install-banner p { font-size: 13px; color: var(--accent2); flex: 1; }
+#install-banner button {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #000;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', sans-serif;
+  white-space: nowrap;
+}
+#dismiss-install {
+  background: none !important;
+  border: none;
+  color: var(--muted) !important;
+  font-size: 18px;
+  padding: 0 4px !important;
+  cursor: pointer;
+  font-weight: 400 !important;
+}
+#ios-tip {
+  display: none;
+  background: rgba(80,128,224,0.1);
+  border: 1px solid rgba(80,128,224,0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #8ab4ff;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@media (max-width: 380px) {
+  .btn { font-size: 11px; padding: 0 2px; }
+  .single-word { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div id="install-banner">
+    <p>安裝到桌面，隨時離線使用</p>
+    <button id="install-btn">安裝</button>
+    <button id="dismiss-install">✕</button>
+  </div>
+  <div id="ios-tip">
+    📱 iOS 安裝方式：點底部 <strong>分享</strong> 圖示 → 選「<strong>加入主畫面</strong>」
+  </div>
+
+  <div class="header">
+    <h1>// <span class="lt" data-lang="en">ENGLISH</span> / <span class="lt" data-lang="de">GERMAN</span> PRACTICE</h1>
+    <p id="subt">A1 入門 ｜ 字母 · 數字 · 親屬 · 動詞</p>
+  </div>
+
+  <div class="panel">
+    <div class="filter-row">
+      <select id="csel">
+        <option value="letter">字母</option>
+        <option value="number">數字</option>
+        <option value="family">親屬</option>
+        <option value="verb">動詞</option>
+      </select>
+      <div class="mode-toggle">
+        <button id="mode-grid" data-mode="grid">⊞ 網格</button>
+        <button id="mode-single" data-mode="single">▢ 單卡</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="content-panel">
+    <!-- Grid view -->
+    <div id="grid-view" class="grid cat-letter"></div>
+
+    <!-- Single view -->
+    <div id="single-view" style="display:none;">
+      <div class="single-top">
+        <span class="badge" id="badge">字母</span>
+        <span class="cnt" id="cnt">1 / 26</span>
+      </div>
+      <div class="single-word" id="single-word" onclick="speakOne()">—</div>
+      <div class="single-ctx" id="single-ctx"></div>
+      <div class="trans" id="trans"></div>
+      <button class="ttbtn" id="ttbtn" onclick="toggleT()">[ 顯示中文 ]</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ctrl-row">
+      <label>聲音</label>
+      <select class="vsel" id="vsel"><option>載入中...</option></select>
+    </div>
+    <div class="ctrl-row">
+      <label>速度</label>
+      <input type="range" id="spd" min="0.5" max="1.5" step="0.1" value="0.9">
+      <span class="sv" id="spdv">0.9x</span>
+    </div>
+
+    <!-- Grid mode controls -->
+    <div class="btn-grid three" id="grid-controls">
+      <button class="btn btn-speak" onclick="speakAll()">▶ 朗讀全部</button>
+      <button class="btn btn-rand" onclick="randomGridPlay()">🔀 隨機</button>
+      <button class="btn btn-stop" onclick="stopAll()">⏹ 停止</button>
+    </div>
+
+    <!-- Single mode controls -->
+    <div class="btn-grid" id="single-controls" style="display:none;">
+      <button class="btn btn-prev" id="prevbtn" onclick="prev()">← 上一</button>
+      <button class="btn btn-speak" onclick="speakOne()">▶ 朗讀</button>
+      <button class="btn btn-rand" onclick="randomItem()">🔀 隨機</button>
+      <button class="btn btn-next" onclick="next()">下一 →</button>
+    </div>
+
+    <div class="hint" id="hint">點任一項目可朗讀</div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──
+const ITEMS = [
+  // ── 字母 letter (26 + 4 de-only = 30) ──
+  ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({c:"letter", en:l, de:l})),
+  {c:"letter", de_only:true, de:"Ä", en:"Ä"},
+  {c:"letter", de_only:true, de:"Ö", en:"Ö"},
+  {c:"letter", de_only:true, de:"Ü", en:"Ü"},
+  {c:"letter", de_only:true, de:"ß", en:"ß"},
+
+  // ── 數字 number 0-20 ──
+  {c:"number", en:"0", de:"0", zh:"零"},
+  {c:"number", en:"1", de:"1", zh:"一"},
+  {c:"number", en:"2", de:"2", zh:"二"},
+  {c:"number", en:"3", de:"3", zh:"三"},
+  {c:"number", en:"4", de:"4", zh:"四"},
+  {c:"number", en:"5", de:"5", zh:"五"},
+  {c:"number", en:"6", de:"6", zh:"六"},
+  {c:"number", en:"7", de:"7", zh:"七"},
+  {c:"number", en:"8", de:"8", zh:"八"},
+  {c:"number", en:"9", de:"9", zh:"九"},
+  {c:"number", en:"10", de:"10", zh:"十"},
+  {c:"number", en:"11", de:"11", zh:"十一"},
+  {c:"number", en:"12", de:"12", zh:"十二"},
+  {c:"number", en:"13", de:"13", zh:"十三"},
+  {c:"number", en:"14", de:"14", zh:"十四"},
+  {c:"number", en:"15", de:"15", zh:"十五"},
+  {c:"number", en:"16", de:"16", zh:"十六"},
+  {c:"number", en:"17", de:"17", zh:"十七"},
+  {c:"number", en:"18", de:"18", zh:"十八"},
+  {c:"number", en:"19", de:"19", zh:"十九"},
+  {c:"number", en:"20", de:"20", zh:"二十"},
+
+  // ── 親屬 family ──
+  {c:"family", en:"mother", de:"Mutter", zh:"媽媽"},
+  {c:"family", en:"father", de:"Vater", zh:"爸爸"},
+  {c:"family", en:"brother", de:"Bruder", zh:"兄弟"},
+  {c:"family", en:"sister", de:"Schwester", zh:"姊妹"},
+  {c:"family", en:"grandmother", de:"Oma", zh:"奶奶"},
+  {c:"family", en:"grandfather", de:"Opa", zh:"爺爺"},
+  {c:"family", en:"son", de:"Sohn", zh:"兒子"},
+  {c:"family", en:"daughter", de:"Tochter", zh:"女兒"},
+  {c:"family", en:"uncle", de:"Onkel", zh:"叔伯舅"},
+  {c:"family", en:"aunt", de:"Tante", zh:"阿姨姑姑"},
+  {c:"family", en:"cousin", de:"Cousin", zh:"表/堂兄弟"},
+  {c:"family", en:"husband", de:"Ehemann", zh:"丈夫"},
+  {c:"family", en:"wife", de:"Ehefrau", zh:"妻子"},
+  {c:"family", en:"child", de:"Kind", zh:"小孩"},
+  {c:"family", en:"parents", de:"Eltern", zh:"父母"},
+
+  // ── 動詞 verb ──
+  {c:"verb", en:"eat", de:"essen", zh:"吃", ctx_en:"I {eat} bread.", ctx_de:"Ich {esse} Brot."},
+  {c:"verb", en:"drink", de:"trinken", zh:"喝", ctx_en:"I {drink} water.", ctx_de:"Ich {trinke} Wasser."},
+  {c:"verb", en:"go", de:"gehen", zh:"去", ctx_en:"I {go} home.", ctx_de:"Ich {gehe} nach Hause."},
+  {c:"verb", en:"come", de:"kommen", zh:"來", ctx_en:"She {comes} today.", ctx_de:"Sie {kommt} heute."},
+  {c:"verb", en:"sleep", de:"schlafen", zh:"睡", ctx_en:"I {sleep} early.", ctx_de:"Ich {schlafe} früh."},
+  {c:"verb", en:"read", de:"lesen", zh:"讀", ctx_en:"I {read} a book.", ctx_de:"Ich {lese} ein Buch."},
+  {c:"verb", en:"write", de:"schreiben", zh:"寫", ctx_en:"I {write} a letter.", ctx_de:"Ich {schreibe} einen Brief."},
+  {c:"verb", en:"speak", de:"sprechen", zh:"說", ctx_en:"I {speak} German.", ctx_de:"Ich {spreche} Deutsch."},
+  {c:"verb", en:"see", de:"sehen", zh:"看", ctx_en:"I {see} you.", ctx_de:"Ich {sehe} dich."},
+  {c:"verb", en:"hear", de:"hören", zh:"聽", ctx_en:"I {hear} music.", ctx_de:"Ich {höre} Musik."},
+  {c:"verb", en:"run", de:"laufen", zh:"跑", ctx_en:"He {runs} fast.", ctx_de:"Er {läuft} schnell."},
+  {c:"verb", en:"swim", de:"schwimmen", zh:"游泳", ctx_en:"She {swims} well.", ctx_de:"Sie {schwimmt} gut."},
+  {c:"verb", en:"play", de:"spielen", zh:"玩", ctx_en:"We {play} together.", ctx_de:"Wir {spielen} zusammen."},
+  {c:"verb", en:"learn", de:"lernen", zh:"學", ctx_en:"I {learn} German.", ctx_de:"Ich {lerne} Deutsch."},
+  {c:"verb", en:"have", de:"haben", zh:"有", ctx_en:"I {have} a dog.", ctx_de:"Ich {habe} einen Hund."},
+  {c:"verb", en:"be", de:"sein", zh:"是", ctx_en:"I {am} happy.", ctx_de:"Ich {bin} glücklich."},
+  {c:"verb", en:"like", de:"mögen", zh:"喜歡", ctx_en:"I {like} cats.", ctx_de:"Ich {mag} Katzen."},
+  {c:"verb", en:"buy", de:"kaufen", zh:"買", ctx_en:"I {buy} bread.", ctx_de:"Ich {kaufe} Brot."},
+  {c:"verb", en:"love", de:"lieben", zh:"愛", ctx_en:"I {love} you.", ctx_de:"Ich {liebe} dich."},
+  {c:"verb", en:"work", de:"arbeiten", zh:"工作", ctx_en:"She {works} hard.", ctx_de:"Sie {arbeitet} viel."},
+];
+
+const CAT_LABEL = { letter:"字母", number:"數字", family:"親屬", verb:"動詞" };
+
+// ── State ──
+let lang = localStorage.getItem("ep-lang-v0") === "de" ? "de" : "en";
+let mode = localStorage.getItem("ep-mode-v0") === "single" ? "single" : "grid";
+let category = localStorage.getItem("ep-cat-v0") || "letter";
+let pool = [];
+let singleIdx = 0;
+let showT = false;
+let allPlaying = false;
+
+function txt(item) { return lang === "de" ? item.de : item.en; }
+function ctx(item) {
+  if (item.c !== "verb") return "";
+  const raw = lang === "de" ? item.ctx_de : item.ctx_en;
+  return raw ? raw.replace(/\{(.+?)\}/g, '<span class="verb-hi">$1</span>') : "";
+}
+function hasZh(item) { return item.c !== "letter"; }
+function recomputePool() {
+  pool = ITEMS.filter(i => i.c === category && !(i.de_only && lang === "en"));
+  if (singleIdx >= pool.length) singleIdx = 0;
+}
+
+// ── TTS ──
+const synth = window.speechSynthesis;
+let voices = [];
+
+function loadVoices() {
+  const prefix = lang === "de" ? "de" : "en";
+  voices = synth ? synth.getVoices().filter(v => v.lang.startsWith(prefix)) : [];
+  const s = document.getElementById("vsel");
+  if (!voices.length) { s.innerHTML = "<option>無可用語音</option>"; return; }
+  s.innerHTML = "";
+  voices.forEach((v, i) => {
+    const o = document.createElement("option");
+    o.value = i;
+    o.textContent = v.name + (v.localService ? " ★" : "");
+    s.appendChild(o);
+  });
+  const preferred = lang === "de"
+    ? /Anna|Petra|Markus|Google Deutsch|Hedda|Stefan/i
+    : /Samantha|Karen|Daniel|Google US|Zira|David/i;
+  const p = voices.findIndex(v => preferred.test(v.name));
+  if (p >= 0) s.value = p;
+}
+if (synth) { synth.onvoiceschanged = loadVoices; loadVoices(); }
+
+function utter(text, cb) {
+  if (!synth || !text) { if (cb) cb(); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang === "de" ? "de-DE" : "en-US";
+  const s = document.getElementById("vsel");
+  if (voices[s.value]) u.voice = voices[s.value];
+  u.rate = parseFloat(document.getElementById("spd").value);
+  u.pitch = 1;
+  if (cb) { u.onend = cb; u.onerror = cb; }
+  synth.speak(u);
+}
+
+// ── Render ──
+function clearHi() {
+  document.querySelectorAll(".grid-card.hi").forEach(e => e.classList.remove("hi"));
+  document.getElementById("single-word").classList.remove("hi");
+}
+
+function render() {
+  document.getElementById("grid-view").style.display = mode === "grid" ? "" : "none";
+  document.getElementById("single-view").style.display = mode === "single" ? "" : "none";
+  document.getElementById("grid-controls").style.display = mode === "grid" ? "" : "none";
+  document.getElementById("single-controls").style.display = mode === "single" ? "" : "none";
+  if (mode === "grid") renderGrid();
+  else renderSingle();
+}
+
+function renderGrid() {
+  const c = document.getElementById("grid-view");
+  c.className = "grid cat-" + category;
+  c.innerHTML = "";
+  pool.forEach((item, i) => {
+    const card = document.createElement("div");
+    card.className = "grid-card";
+    card.dataset.idx = i;
+    const w = document.createElement("div");
+    w.className = "g-word";
+    w.textContent = txt(item);
+    card.appendChild(w);
+    if (showT && hasZh(item) && item.zh) {
+      const z = document.createElement("div");
+      z.className = "g-zh";
+      z.textContent = item.zh;
+      card.appendChild(z);
+    }
+    card.addEventListener("click", () => playItem(item, card));
+    c.appendChild(card);
+  });
+  updateTtbtn();
+}
+
+function renderSingle() {
+  if (!pool.length) return;
+  const item = pool[singleIdx];
+  document.getElementById("badge").textContent = CAT_LABEL[item.c];
+  document.getElementById("cnt").textContent = (singleIdx + 1) + " / " + pool.length;
+  document.getElementById("single-word").textContent = txt(item);
+  const ctxEl = document.getElementById("single-ctx");
+  const ctxHtml = ctx(item);
+  ctxEl.innerHTML = ctxHtml;
+  ctxEl.classList.toggle("show", !!ctxHtml);
+  const trans = document.getElementById("trans");
+  trans.textContent = (hasZh(item) && item.zh) ? item.zh : "";
+  trans.style.visibility = (showT && hasZh(item)) ? "visible" : "hidden";
+  document.getElementById("prevbtn").disabled = pool.length <= 1;
+  updateTtbtn();
+}
+
+function updateTtbtn() {
+  const btn = document.getElementById("ttbtn");
+  const enabled = category !== "letter";
+  btn.disabled = !enabled;
+  btn.textContent = enabled
+    ? (showT ? "[ 隱藏中文 ]" : "[ 顯示中文 ]")
+    : "[ 字母無中文 ]";
+}
+
+// ── Play ──
+function playItem(item, el) {
+  stopAll();
+  clearHi();
+  if (el) el.classList.add("hi");
+  else if (mode === "single") document.getElementById("single-word").classList.add("hi");
+  utter(txt(item), () => {
+    if (el) setTimeout(() => el.classList.remove("hi"), 150);
+    else document.getElementById("single-word").classList.remove("hi");
+  });
+}
+
+function speakAll() {
+  stopAll();
+  allPlaying = true;
+  let i = 0;
+  function step() {
+    if (!allPlaying) return;
+    if (i >= pool.length) { allPlaying = false; clearHi(); return; }
+    const item = pool[i];
+    clearHi();
+    if (mode === "grid") {
+      const card = document.querySelector(`.grid-card[data-idx="${i}"]`);
+      if (card) {
+        card.classList.add("hi");
+        card.scrollIntoView({behavior:"smooth", block:"nearest"});
+      }
+    }
+    utter(txt(item), () => { i++; setTimeout(step, 800); });
+  }
+  step();
+}
+
+function randomGridPlay() {
+  if (!pool.length) return;
+  const i = Math.floor(Math.random() * pool.length);
+  const item = pool[i];
+  const card = mode === "grid" ? document.querySelector(`.grid-card[data-idx="${i}"]`) : null;
+  if (card) card.scrollIntoView({behavior:"smooth", block:"nearest"});
+  playItem(item, card);
+}
+
+function stopAll() {
+  allPlaying = false;
+  if (synth) synth.cancel();
+  clearHi();
+}
+
+// ── Single mode nav ──
+function speakOne() {
+  if (!pool.length) return;
+  playItem(pool[singleIdx], null);
+}
+function next() {
+  if (!pool.length) return;
+  singleIdx = (singleIdx + 1) % pool.length;
+  renderSingle();
+}
+function prev() {
+  if (!pool.length) return;
+  singleIdx = (singleIdx - 1 + pool.length) % pool.length;
+  renderSingle();
+}
+function randomItem() {
+  if (pool.length <= 1) return;
+  let i;
+  do { i = Math.floor(Math.random() * pool.length); } while (i === singleIdx);
+  singleIdx = i;
+  renderSingle();
+}
+
+// ── Chinese toggle ──
+function toggleT() {
+  if (category === "letter") return;
+  showT = !showT;
+  if (mode === "grid") renderGrid();
+  else renderSingle();
+  updateTtbtn();
+}
+
+// ── Mode toggle ──
+function setMode(m) {
+  mode = m;
+  try { localStorage.setItem("ep-mode-v0", m); } catch(e) {}
+  document.getElementById("mode-grid").classList.toggle("active", m === "grid");
+  document.getElementById("mode-single").classList.toggle("active", m === "single");
+  stopAll();
+  render();
+}
+document.querySelectorAll(".mode-toggle button").forEach(b => {
+  b.addEventListener("click", () => setMode(b.dataset.mode));
+});
+
+// ── Category change ──
+document.getElementById("csel").addEventListener("change", e => {
+  category = e.target.value;
+  try { localStorage.setItem("ep-cat-v0", category); } catch(e) {}
+  singleIdx = 0;
+  stopAll();
+  recomputePool();
+  render();
+});
+
+// ── Language switch ──
+function setLang(L) {
+  lang = L;
+  try { localStorage.setItem("ep-lang-v0", L); } catch(e) {}
+  document.querySelectorAll(".lt").forEach(t => {
+    t.classList.toggle("active", t.dataset.lang === L);
+  });
+  stopAll();
+  loadVoices();
+  recomputePool();
+  render();
+}
+document.querySelectorAll(".lt").forEach(tab => {
+  tab.addEventListener("click", () => setLang(tab.dataset.lang));
+});
+
+// ── Speed display ──
+document.getElementById("spd").addEventListener("input", function () {
+  document.getElementById("spdv").textContent = parseFloat(this.value).toFixed(1) + "x";
+});
+
+// ── PWA Install ──
+let deferredPrompt = null;
+const banner = document.getElementById("install-banner");
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isInStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+if (isIOS && !isInStandalone) document.getElementById("ios-tip").style.display = "block";
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!isInStandalone) banner.style.display = "flex";
+});
+document.getElementById("install-btn").addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  banner.style.display = "none";
+});
+document.getElementById("dismiss-install").addEventListener("click", () => { banner.style.display = "none"; });
+
+// ── Service Worker ──
+if ("serviceWorker" in navigator) {
+  const swCode = `
+const CACHE="ep-v0-1";
+const ASSETS=[location.href];
+self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting();});
+self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
+self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});
+`;
+  const blob = new Blob([swCode], { type: "application/javascript" });
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+}
+
+// ── Init ──
+document.getElementById("csel").value = category;
+document.getElementById("mode-grid").classList.toggle("active", mode === "grid");
+document.getElementById("mode-single").classList.toggle("active", mode === "single");
+setLang(lang);
+</script>
+</body>
+</html>
