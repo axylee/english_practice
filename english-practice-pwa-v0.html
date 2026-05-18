@@ -135,10 +135,21 @@ body {
 .grid {
   display: grid;
   gap: 6px;
-  max-height: 56vh;
+  height: 44vh;
+  max-height: 460px;
+  min-height: 280px;
   overflow-y: auto;
-  padding: 2px;
+  padding: 2px 6px 2px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
+.grid::-webkit-scrollbar { width: 8px; }
+.grid::-webkit-scrollbar-track { background: transparent; }
+.grid::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.grid::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 .grid.cat-letter, .grid.cat-number {
   grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
 }
@@ -532,6 +543,16 @@ const ITEMS = [
   {c:"family", en:"wife", de:"Ehefrau", zh:"妻子"},
   {c:"family", en:"child", de:"Kind", zh:"小孩"},
   {c:"family", en:"parents", de:"Eltern", zh:"父母"},
+  {c:"family", en:"siblings", de:"Geschwister", zh:"兄弟姊妹"},
+  {c:"family", en:"nephew", de:"Neffe", zh:"姪兒外甥"},
+  {c:"family", en:"niece", de:"Nichte", zh:"姪女外甥女"},
+  {c:"family", en:"baby", de:"Baby", zh:"嬰兒"},
+  {c:"family", en:"twins", de:"Zwillinge", zh:"雙胞胎"},
+  {c:"family", en:"boyfriend", de:"Freund", zh:"男友"},
+  {c:"family", en:"girlfriend", de:"Freundin", zh:"女友"},
+  {c:"family", en:"relative", de:"Verwandte", zh:"親戚"},
+  {c:"family", en:"neighbor", de:"Nachbar", zh:"鄰居"},
+  {c:"family", en:"family", de:"Familie", zh:"家庭"},
 
   // ── 動詞 verb ──
   {c:"verb", en:"eat", de:"essen", zh:"吃", ctx_en:"I {eat} bread.", ctx_de:"Ich {esse} Brot."},
@@ -554,6 +575,26 @@ const ITEMS = [
   {c:"verb", en:"buy", de:"kaufen", zh:"買", ctx_en:"I {buy} bread.", ctx_de:"Ich {kaufe} Brot."},
   {c:"verb", en:"love", de:"lieben", zh:"愛", ctx_en:"I {love} you.", ctx_de:"Ich {liebe} dich."},
   {c:"verb", en:"work", de:"arbeiten", zh:"工作", ctx_en:"She {works} hard.", ctx_de:"Sie {arbeitet} viel."},
+  {c:"verb", en:"walk", de:"spazieren", zh:"散步", ctx_en:"I {walk} in the park.", ctx_de:"Ich {spaziere} im Park."},
+  {c:"verb", en:"sit", de:"sitzen", zh:"坐", ctx_en:"I {sit} on a chair.", ctx_de:"Ich {sitze} auf einem Stuhl."},
+  {c:"verb", en:"stand", de:"stehen", zh:"站", ctx_en:"I {stand} here.", ctx_de:"Ich {stehe} hier."},
+  {c:"verb", en:"open", de:"öffnen", zh:"打開", ctx_en:"I {open} the door.", ctx_de:"Ich {öffne} die Tür."},
+  {c:"verb", en:"close", de:"schließen", zh:"關閉", ctx_en:"I {close} the window.", ctx_de:"Ich {schließe} das Fenster."},
+  {c:"verb", en:"give", de:"geben", zh:"給", ctx_en:"I {give} you a gift.", ctx_de:"Ich {gebe} dir ein Geschenk."},
+  {c:"verb", en:"take", de:"nehmen", zh:"拿", ctx_en:"I {take} the bus.", ctx_de:"Ich {nehme} den Bus."},
+  {c:"verb", en:"make", de:"machen", zh:"做", ctx_en:"I {make} dinner.", ctx_de:"Ich {mache} Abendessen."},
+  {c:"verb", en:"want", de:"wollen", zh:"想要", ctx_en:"I {want} a coffee.", ctx_de:"Ich {will} einen Kaffee."},
+  {c:"verb", en:"need", de:"brauchen", zh:"需要", ctx_en:"I {need} help.", ctx_de:"Ich {brauche} Hilfe."},
+  {c:"verb", en:"know", de:"wissen", zh:"知道", ctx_en:"I {know} the answer.", ctx_de:"Ich {weiß} die Antwort."},
+  {c:"verb", en:"think", de:"denken", zh:"想/思考", ctx_en:"I {think} so.", ctx_de:"Ich {denke} so."},
+  {c:"verb", en:"say", de:"sagen", zh:"說", ctx_en:"I {say} hello.", ctx_de:"Ich {sage} hallo."},
+  {c:"verb", en:"ask", de:"fragen", zh:"問", ctx_en:"I {ask} a question.", ctx_de:"Ich {frage} etwas."},
+  {c:"verb", en:"answer", de:"antworten", zh:"回答", ctx_en:"I {answer} her.", ctx_de:"Ich {antworte} ihr."},
+  {c:"verb", en:"help", de:"helfen", zh:"幫助", ctx_en:"I {help} you.", ctx_de:"Ich {helfe} dir."},
+  {c:"verb", en:"wait", de:"warten", zh:"等", ctx_en:"I {wait} for the bus.", ctx_de:"Ich {warte} auf den Bus."},
+  {c:"verb", en:"find", de:"finden", zh:"找到", ctx_en:"I {find} my keys.", ctx_de:"Ich {finde} meine Schlüssel."},
+  {c:"verb", en:"sing", de:"singen", zh:"唱", ctx_en:"I {sing} a song.", ctx_de:"Ich {singe} ein Lied."},
+  {c:"verb", en:"dance", de:"tanzen", zh:"跳舞", ctx_en:"We {dance} together.", ctx_de:"Wir {tanzen} zusammen."},
 ];
 
 const CAT_LABEL = { letter:"字母", number:"數字", family:"親屬", verb:"動詞" };
