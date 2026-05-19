@@ -131,6 +131,30 @@ body {
   border-right: 1px solid var(--border);
 }
 
+/* ── Category header ── */
+.cat-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.cat-header .cat-emoji {
+  font-size: 18px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.cat-header .cat-count {
+  color: var(--muted);
+  font-size: 11px;
+  margin-left: 6px;
+  font-weight: 400;
+}
+
 /* ── Grid view ── */
 .grid {
   display: grid;
@@ -155,9 +179,11 @@ body {
 }
 .grid.cat-family, .grid.cat-verb,
 .grid.cat-fruit, .grid.cat-transport, .grid.cat-animal,
-.grid.cat-food, .grid.cat-color, .grid.cat-body,
-.grid.cat-weather, .grid.cat-time {
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+.grid.cat-food, .grid.cat-drink, .grid.cat-color, .grid.cat-body,
+.grid.cat-clothing, .grid.cat-room, .grid.cat-school_items,
+.grid.cat-weather, .grid.cat-time, .grid.cat-place,
+.grid.cat-season, .grid.cat-day, .grid.cat-month {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
 .grid-card {
   background: var(--surface2);
@@ -180,9 +206,10 @@ body {
 .grid-card .g-word {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 17px;
   line-height: 1.2;
   word-break: break-word;
+  hyphens: auto;
 }
 .grid.cat-letter .g-word, .grid.cat-number .g-word { font-size: 24px; }
 .grid-card .g-zh {
@@ -438,20 +465,28 @@ input[type=range] {
     <div class="filter-row">
       <select id="csel">
         <optgroup label="── 基礎 ──">
-          <option value="letter">字母</option>
-          <option value="number">數字</option>
-          <option value="verb">動詞</option>
+          <option value="letter">🔤 字母</option>
+          <option value="number">🔢 數字</option>
+          <option value="verb">⚡ 動詞</option>
         </optgroup>
         <optgroup label="── 名詞 ──">
-          <option value="family">親屬</option>
-          <option value="fruit">水果</option>
-          <option value="transport">交通</option>
-          <option value="animal">動物</option>
-          <option value="food">食物</option>
-          <option value="color">顏色</option>
-          <option value="body">身體</option>
-          <option value="weather">天氣</option>
-          <option value="time">時間</option>
+          <option value="family">👨‍👩‍👧 親屬</option>
+          <option value="body">👁️ 身體</option>
+          <option value="color">🎨 顏色</option>
+          <option value="clothing">👕 衣物</option>
+          <option value="food">🍞 食物</option>
+          <option value="drink">🥤 飲料</option>
+          <option value="fruit">🍎 水果</option>
+          <option value="animal">🐶 動物</option>
+          <option value="weather">☀️ 天氣</option>
+          <option value="room">🏠 房間家具</option>
+          <option value="school_items">📚 學校用品</option>
+          <option value="transport">🚌 交通</option>
+          <option value="place">📍 地點</option>
+          <option value="time">⏰ 時間</option>
+          <option value="season">🌸 季節</option>
+          <option value="day">📅 星期</option>
+          <option value="month">📆 月份</option>
         </optgroup>
       </select>
       <div class="mode-toggle">
@@ -462,6 +497,7 @@ input[type=range] {
   </div>
 
   <div class="panel" id="content-panel">
+    <div class="cat-header" id="cat-header"><span class="cat-emoji">🔤</span> <span id="cat-name">字母</span> <span class="cat-count" id="cat-count">· 30 項</span></div>
     <!-- Grid view -->
     <div id="grid-view" class="grid cat-letter"></div>
 
@@ -719,12 +755,113 @@ const ITEMS = [
   {c:"time", en:"month", de:"Monat", zh:"月"},
   {c:"time", en:"year", de:"Jahr", zh:"年"},
   {c:"time", en:"hour", de:"Stunde", zh:"小時"},
+
+  // ── 飲料 drink (7) ──
+  {c:"drink", en:"water", de:"Wasser", zh:"水"},
+  {c:"drink", en:"coffee", de:"Kaffee", zh:"咖啡"},
+  {c:"drink", en:"tea", de:"Tee", zh:"茶"},
+  {c:"drink", en:"juice", de:"Saft", zh:"果汁"},
+  {c:"drink", en:"milk", de:"Milch", zh:"牛奶"},
+  {c:"drink", en:"beer", de:"Bier", zh:"啤酒"},
+  {c:"drink", en:"wine", de:"Wein", zh:"葡萄酒"},
+
+  // ── 衣物 clothing (10) ──
+  {c:"clothing", en:"shirt", de:"Hemd", zh:"襯衫"},
+  {c:"clothing", en:"pants", de:"Hose", zh:"褲子"},
+  {c:"clothing", en:"dress", de:"Kleid", zh:"洋裝"},
+  {c:"clothing", en:"shoes", de:"Schuhe", zh:"鞋子"},
+  {c:"clothing", en:"hat", de:"Hut", zh:"帽子"},
+  {c:"clothing", en:"coat", de:"Mantel", zh:"大衣"},
+  {c:"clothing", en:"jacket", de:"Jacke", zh:"夾克"},
+  {c:"clothing", en:"sock", de:"Socke", zh:"襪子"},
+  {c:"clothing", en:"glove", de:"Handschuh", zh:"手套"},
+  {c:"clothing", en:"scarf", de:"Schal", zh:"圍巾"},
+
+  // ── 房間家具 room (12) ──
+  {c:"room", en:"kitchen", de:"Küche", zh:"廚房"},
+  {c:"room", en:"bedroom", de:"Schlafzimmer", zh:"臥室"},
+  {c:"room", en:"bathroom", de:"Badezimmer", zh:"浴室"},
+  {c:"room", en:"living room", de:"Wohnzimmer", zh:"客廳"},
+  {c:"room", en:"table", de:"Tisch", zh:"桌子"},
+  {c:"room", en:"chair", de:"Stuhl", zh:"椅子"},
+  {c:"room", en:"bed", de:"Bett", zh:"床"},
+  {c:"room", en:"sofa", de:"Sofa", zh:"沙發"},
+  {c:"room", en:"door", de:"Tür", zh:"門"},
+  {c:"room", en:"window", de:"Fenster", zh:"窗"},
+  {c:"room", en:"lamp", de:"Lampe", zh:"燈"},
+  {c:"room", en:"mirror", de:"Spiegel", zh:"鏡子"},
+
+  // ── 學校用品 school_items (10) ──
+  {c:"school_items", en:"book", de:"Buch", zh:"書"},
+  {c:"school_items", en:"pen", de:"Stift", zh:"筆"},
+  {c:"school_items", en:"pencil", de:"Bleistift", zh:"鉛筆"},
+  {c:"school_items", en:"bag", de:"Tasche", zh:"包包"},
+  {c:"school_items", en:"paper", de:"Papier", zh:"紙"},
+  {c:"school_items", en:"notebook", de:"Heft", zh:"筆記本"},
+  {c:"school_items", en:"ruler", de:"Lineal", zh:"尺"},
+  {c:"school_items", en:"eraser", de:"Radiergummi", zh:"橡皮擦"},
+  {c:"school_items", en:"computer", de:"Computer", zh:"電腦"},
+  {c:"school_items", en:"desk", de:"Schreibtisch", zh:"書桌"},
+
+  // ── 地點 place (12) ──
+  {c:"place", en:"park", de:"Park", zh:"公園"},
+  {c:"place", en:"store", de:"Geschäft", zh:"商店"},
+  {c:"place", en:"school", de:"Schule", zh:"學校"},
+  {c:"place", en:"hospital", de:"Krankenhaus", zh:"醫院"},
+  {c:"place", en:"restaurant", de:"Restaurant", zh:"餐廳"},
+  {c:"place", en:"museum", de:"Museum", zh:"博物館"},
+  {c:"place", en:"library", de:"Bibliothek", zh:"圖書館"},
+  {c:"place", en:"bank", de:"Bank", zh:"銀行"},
+  {c:"place", en:"airport", de:"Flughafen", zh:"機場"},
+  {c:"place", en:"station", de:"Bahnhof", zh:"車站"},
+  {c:"place", en:"beach", de:"Strand", zh:"海邊"},
+  {c:"place", en:"city", de:"Stadt", zh:"城市"},
+
+  // ── 季節 season (4) ──
+  {c:"season", en:"spring", de:"Frühling", zh:"春天"},
+  {c:"season", en:"summer", de:"Sommer", zh:"夏天"},
+  {c:"season", en:"autumn", de:"Herbst", zh:"秋天"},
+  {c:"season", en:"winter", de:"Winter", zh:"冬天"},
+
+  // ── 星期 day (7) ──
+  {c:"day", en:"Monday", de:"Montag", zh:"星期一"},
+  {c:"day", en:"Tuesday", de:"Dienstag", zh:"星期二"},
+  {c:"day", en:"Wednesday", de:"Mittwoch", zh:"星期三"},
+  {c:"day", en:"Thursday", de:"Donnerstag", zh:"星期四"},
+  {c:"day", en:"Friday", de:"Freitag", zh:"星期五"},
+  {c:"day", en:"Saturday", de:"Samstag", zh:"星期六"},
+  {c:"day", en:"Sunday", de:"Sonntag", zh:"星期日"},
+
+  // ── 月份 month (12) ──
+  {c:"month", en:"January", de:"Januar", zh:"一月"},
+  {c:"month", en:"February", de:"Februar", zh:"二月"},
+  {c:"month", en:"March", de:"März", zh:"三月"},
+  {c:"month", en:"April", de:"April", zh:"四月"},
+  {c:"month", en:"May", de:"Mai", zh:"五月"},
+  {c:"month", en:"June", de:"Juni", zh:"六月"},
+  {c:"month", en:"July", de:"Juli", zh:"七月"},
+  {c:"month", en:"August", de:"August", zh:"八月"},
+  {c:"month", en:"September", de:"September", zh:"九月"},
+  {c:"month", en:"October", de:"Oktober", zh:"十月"},
+  {c:"month", en:"November", de:"November", zh:"十一月"},
+  {c:"month", en:"December", de:"Dezember", zh:"十二月"},
 ];
 
 const CAT_LABEL = {
   letter:"字母", number:"數字", verb:"動詞",
   family:"親屬", fruit:"水果", transport:"交通", animal:"動物",
-  food:"食物", color:"顏色", body:"身體", weather:"天氣", time:"時間"
+  food:"食物", drink:"飲料", color:"顏色", body:"身體",
+  clothing:"衣物", room:"房間家具", school_items:"學校用品",
+  weather:"天氣", time:"時間", place:"地點", season:"季節",
+  day:"星期", month:"月份"
+};
+const CAT_EMOJI = {
+  letter:"🔤", number:"🔢", verb:"⚡",
+  family:"👨‍👩‍👧", fruit:"🍎", transport:"🚌", animal:"🐶",
+  food:"🍞", drink:"🥤", color:"🎨", body:"👁️",
+  clothing:"👕", room:"🏠", school_items:"📚",
+  weather:"☀️", time:"⏰", place:"📍", season:"🌸",
+  day:"📅", month:"📆"
 };
 
 // ── State ──
@@ -804,6 +941,10 @@ function render() {
   document.getElementById("single-view").style.display = mode === "single" ? "" : "none";
   document.getElementById("grid-controls").style.display = mode === "grid" ? "" : "none";
   document.getElementById("single-controls").style.display = mode === "single" ? "" : "none";
+  // header always reflects current category
+  document.querySelector(".cat-header .cat-emoji").textContent = CAT_EMOJI[category] || "";
+  document.getElementById("cat-name").textContent = CAT_LABEL[category];
+  document.getElementById("cat-count").textContent = "· " + pool.length + " 項";
   if (mode === "grid") renderGrid();
   else renderSingle();
 }
@@ -835,7 +976,7 @@ function renderGrid() {
 function renderSingle() {
   if (!pool.length) return;
   const item = pool[singleIdx];
-  document.getElementById("badge").textContent = CAT_LABEL[item.c];
+  document.getElementById("badge").textContent = (CAT_EMOJI[item.c] || "") + " " + CAT_LABEL[item.c];
   document.getElementById("cnt").textContent = (singleIdx + 1) + " / " + pool.length;
   document.getElementById("single-word").textContent = txt(item);
   const ctxEl = document.getElementById("single-ctx");
