@@ -153,7 +153,10 @@ body {
 .grid.cat-letter, .grid.cat-number {
   grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
 }
-.grid.cat-family, .grid.cat-verb {
+.grid.cat-family, .grid.cat-verb,
+.grid.cat-fruit, .grid.cat-transport, .grid.cat-animal,
+.grid.cat-food, .grid.cat-color, .grid.cat-body,
+.grid.cat-weather, .grid.cat-time {
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
 }
 .grid-card {
@@ -434,10 +437,22 @@ input[type=range] {
   <div class="panel">
     <div class="filter-row">
       <select id="csel">
-        <option value="letter">字母</option>
-        <option value="number">數字</option>
-        <option value="family">親屬</option>
-        <option value="verb">動詞</option>
+        <optgroup label="── 基礎 ──">
+          <option value="letter">字母</option>
+          <option value="number">數字</option>
+          <option value="verb">動詞</option>
+        </optgroup>
+        <optgroup label="── 名詞 ──">
+          <option value="family">親屬</option>
+          <option value="fruit">水果</option>
+          <option value="transport">交通</option>
+          <option value="animal">動物</option>
+          <option value="food">食物</option>
+          <option value="color">顏色</option>
+          <option value="body">身體</option>
+          <option value="weather">天氣</option>
+          <option value="time">時間</option>
+        </optgroup>
       </select>
       <div class="mode-toggle">
         <button id="mode-grid" data-mode="grid">⊞ 網格</button>
@@ -595,9 +610,122 @@ const ITEMS = [
   {c:"verb", en:"find", de:"finden", zh:"找到", ctx_en:"I {find} my keys.", ctx_de:"Ich {finde} meine Schlüssel."},
   {c:"verb", en:"sing", de:"singen", zh:"唱", ctx_en:"I {sing} a song.", ctx_de:"Ich {singe} ein Lied."},
   {c:"verb", en:"dance", de:"tanzen", zh:"跳舞", ctx_en:"We {dance} together.", ctx_de:"Wir {tanzen} zusammen."},
+
+  // ── 水果 fruit (12) ──
+  {c:"fruit", en:"apple", de:"Apfel", zh:"蘋果"},
+  {c:"fruit", en:"banana", de:"Banane", zh:"香蕉"},
+  {c:"fruit", en:"orange", de:"Orange", zh:"柳橙"},
+  {c:"fruit", en:"grape", de:"Traube", zh:"葡萄"},
+  {c:"fruit", en:"strawberry", de:"Erdbeere", zh:"草莓"},
+  {c:"fruit", en:"watermelon", de:"Wassermelone", zh:"西瓜"},
+  {c:"fruit", en:"pear", de:"Birne", zh:"梨子"},
+  {c:"fruit", en:"peach", de:"Pfirsich", zh:"桃子"},
+  {c:"fruit", en:"lemon", de:"Zitrone", zh:"檸檬"},
+  {c:"fruit", en:"pineapple", de:"Ananas", zh:"鳳梨"},
+  {c:"fruit", en:"mango", de:"Mango", zh:"芒果"},
+  {c:"fruit", en:"cherry", de:"Kirsche", zh:"櫻桃"},
+
+  // ── 交通 transport (10) ──
+  {c:"transport", en:"car", de:"Auto", zh:"汽車"},
+  {c:"transport", en:"bus", de:"Bus", zh:"公車"},
+  {c:"transport", en:"train", de:"Zug", zh:"火車"},
+  {c:"transport", en:"plane", de:"Flugzeug", zh:"飛機"},
+  {c:"transport", en:"bicycle", de:"Fahrrad", zh:"腳踏車"},
+  {c:"transport", en:"motorcycle", de:"Motorrad", zh:"機車"},
+  {c:"transport", en:"ship", de:"Schiff", zh:"船"},
+  {c:"transport", en:"taxi", de:"Taxi", zh:"計程車"},
+  {c:"transport", en:"subway", de:"U-Bahn", zh:"地鐵"},
+  {c:"transport", en:"truck", de:"Lastwagen", zh:"卡車"},
+
+  // ── 動物 animal (14) ──
+  {c:"animal", en:"dog", de:"Hund", zh:"狗"},
+  {c:"animal", en:"cat", de:"Katze", zh:"貓"},
+  {c:"animal", en:"bird", de:"Vogel", zh:"鳥"},
+  {c:"animal", en:"fish", de:"Fisch", zh:"魚"},
+  {c:"animal", en:"horse", de:"Pferd", zh:"馬"},
+  {c:"animal", en:"cow", de:"Kuh", zh:"牛"},
+  {c:"animal", en:"pig", de:"Schwein", zh:"豬"},
+  {c:"animal", en:"chicken", de:"Huhn", zh:"雞"},
+  {c:"animal", en:"sheep", de:"Schaf", zh:"羊"},
+  {c:"animal", en:"rabbit", de:"Kaninchen", zh:"兔子"},
+  {c:"animal", en:"mouse", de:"Maus", zh:"老鼠"},
+  {c:"animal", en:"elephant", de:"Elefant", zh:"大象"},
+  {c:"animal", en:"lion", de:"Löwe", zh:"獅子"},
+  {c:"animal", en:"tiger", de:"Tiger", zh:"老虎"},
+
+  // ── 食物 food (14) ──
+  {c:"food", en:"bread", de:"Brot", zh:"麵包"},
+  {c:"food", en:"rice", de:"Reis", zh:"米飯"},
+  {c:"food", en:"noodle", de:"Nudel", zh:"麵條"},
+  {c:"food", en:"soup", de:"Suppe", zh:"湯"},
+  {c:"food", en:"cheese", de:"Käse", zh:"起司"},
+  {c:"food", en:"egg", de:"Ei", zh:"蛋"},
+  {c:"food", en:"meat", de:"Fleisch", zh:"肉"},
+  {c:"food", en:"butter", de:"Butter", zh:"奶油"},
+  {c:"food", en:"sugar", de:"Zucker", zh:"糖"},
+  {c:"food", en:"salt", de:"Salz", zh:"鹽"},
+  {c:"food", en:"cake", de:"Kuchen", zh:"蛋糕"},
+  {c:"food", en:"chocolate", de:"Schokolade", zh:"巧克力"},
+  {c:"food", en:"ice cream", de:"Eis", zh:"冰淇淋"},
+  {c:"food", en:"sandwich", de:"Sandwich", zh:"三明治"},
+
+  // ── 顏色 color (11) ──
+  {c:"color", en:"red", de:"rot", zh:"紅"},
+  {c:"color", en:"blue", de:"blau", zh:"藍"},
+  {c:"color", en:"green", de:"grün", zh:"綠"},
+  {c:"color", en:"yellow", de:"gelb", zh:"黃"},
+  {c:"color", en:"black", de:"schwarz", zh:"黑"},
+  {c:"color", en:"white", de:"weiß", zh:"白"},
+  {c:"color", en:"pink", de:"rosa", zh:"粉紅"},
+  {c:"color", en:"orange", de:"orange", zh:"橘"},
+  {c:"color", en:"purple", de:"lila", zh:"紫"},
+  {c:"color", en:"brown", de:"braun", zh:"棕"},
+  {c:"color", en:"gray", de:"grau", zh:"灰"},
+
+  // ── 身體 body (14) ──
+  {c:"body", en:"head", de:"Kopf", zh:"頭"},
+  {c:"body", en:"eye", de:"Auge", zh:"眼睛"},
+  {c:"body", en:"ear", de:"Ohr", zh:"耳朵"},
+  {c:"body", en:"nose", de:"Nase", zh:"鼻子"},
+  {c:"body", en:"mouth", de:"Mund", zh:"嘴"},
+  {c:"body", en:"tooth", de:"Zahn", zh:"牙齒"},
+  {c:"body", en:"hand", de:"Hand", zh:"手"},
+  {c:"body", en:"foot", de:"Fuß", zh:"腳"},
+  {c:"body", en:"arm", de:"Arm", zh:"手臂"},
+  {c:"body", en:"leg", de:"Bein", zh:"腿"},
+  {c:"body", en:"finger", de:"Finger", zh:"手指"},
+  {c:"body", en:"hair", de:"Haar", zh:"頭髮"},
+  {c:"body", en:"shoulder", de:"Schulter", zh:"肩膀"},
+  {c:"body", en:"heart", de:"Herz", zh:"心臟"},
+
+  // ── 天氣 weather (7) ──
+  {c:"weather", en:"sun", de:"Sonne", zh:"太陽"},
+  {c:"weather", en:"rain", de:"Regen", zh:"雨"},
+  {c:"weather", en:"snow", de:"Schnee", zh:"雪"},
+  {c:"weather", en:"wind", de:"Wind", zh:"風"},
+  {c:"weather", en:"cloud", de:"Wolke", zh:"雲"},
+  {c:"weather", en:"storm", de:"Sturm", zh:"暴風雨"},
+  {c:"weather", en:"fog", de:"Nebel", zh:"霧"},
+
+  // ── 時間 time (11) ──
+  {c:"time", en:"morning", de:"Morgen", zh:"早上"},
+  {c:"time", en:"afternoon", de:"Nachmittag", zh:"下午"},
+  {c:"time", en:"evening", de:"Abend", zh:"晚上"},
+  {c:"time", en:"night", de:"Nacht", zh:"夜晚"},
+  {c:"time", en:"today", de:"heute", zh:"今天"},
+  {c:"time", en:"tomorrow", de:"morgen", zh:"明天"},
+  {c:"time", en:"yesterday", de:"gestern", zh:"昨天"},
+  {c:"time", en:"week", de:"Woche", zh:"週"},
+  {c:"time", en:"month", de:"Monat", zh:"月"},
+  {c:"time", en:"year", de:"Jahr", zh:"年"},
+  {c:"time", en:"hour", de:"Stunde", zh:"小時"},
 ];
 
-const CAT_LABEL = { letter:"字母", number:"數字", family:"親屬", verb:"動詞" };
+const CAT_LABEL = {
+  letter:"字母", number:"數字", verb:"動詞",
+  family:"親屬", fruit:"水果", transport:"交通", animal:"動物",
+  food:"食物", color:"顏色", body:"身體", weather:"天氣", time:"時間"
+};
 
 // ── State ──
 let lang = localStorage.getItem("ep-lang-v0") === "de" ? "de" : "en";
