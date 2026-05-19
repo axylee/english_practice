@@ -212,6 +212,11 @@ body {
   hyphens: auto;
 }
 .grid.cat-letter .g-word, .grid.cat-number .g-word { font-size: 24px; }
+.grid-card .g-emoji {
+  font-size: 24px;
+  line-height: 1.1;
+  margin-top: 4px;
+}
 .grid-card .g-zh {
   font-size: 11px;
   color: var(--muted);
@@ -254,6 +259,13 @@ body {
   cursor: pointer;
 }
 .single-word.hi { color: var(--accent); }
+.single-emoji {
+  font-size: 56px;
+  text-align: center;
+  line-height: 1;
+  margin-top: 4px;
+  min-height: 64px;
+}
 .single-ctx {
   font-size: 15px;
   text-align: center;
@@ -508,6 +520,7 @@ input[type=range] {
         <span class="cnt" id="cnt">1 / 26</span>
       </div>
       <div class="single-word" id="single-word" onclick="speakOne()">—</div>
+      <div class="single-emoji" id="single-emoji"></div>
       <div class="single-ctx" id="single-ctx"></div>
       <div class="trans" id="trans"></div>
       <button class="ttbtn" id="ttbtn" onclick="toggleT()">[ 顯示中文 ]</button>
@@ -855,6 +868,95 @@ const CAT_LABEL = {
   weather:"天氣", time:"時間", place:"地點", season:"季節",
   day:"星期", month:"月份"
 };
+// ── Per-item emoji ──
+const EMOJI = {
+  letter: {
+    "A":"🍎","B":"🐻","C":"🐱","D":"🐶","E":"🥚","F":"🐟","G":"🍇","H":"🏠","I":"🍦","J":"🧃",
+    "K":"🔑","L":"🦁","M":"🌙","N":"📰","O":"🍊","P":"🍕","Q":"👑","R":"🌹","S":"☀️","T":"🌳",
+    "U":"☂️","V":"🎻","W":"🍉","X":"❌","Y":"🪀","Z":"🦓",
+    "Ä":"🍏","Ö":"🛢️","Ü":"📦","ß":"✏️"
+  },
+  number: {
+    "0":"0️⃣","1":"1️⃣","2":"2️⃣","3":"3️⃣","4":"4️⃣","5":"5️⃣","6":"6️⃣","7":"7️⃣","8":"8️⃣","9":"9️⃣","10":"🔟"
+  },
+  verb: {
+    eat:"🍽️", drink:"🥤", go:"🚶", come:"🙋", sleep:"😴", read:"📖", write:"✍️", speak:"🗣️",
+    see:"👀", hear:"👂", run:"🏃", swim:"🏊", play:"⚽", learn:"🎓", have:"🤲", be:"✨",
+    like:"💗", buy:"💰", love:"❤️", work:"💼", walk:"🚶", sit:"🪑", stand:"🧍", open:"🚪",
+    close:"🔒", give:"🎁", take:"👐", make:"🔨", want:"🙏", need:"❗", know:"💡", think:"🤔",
+    say:"💬", ask:"❓", answer:"✅", help:"🆘", wait:"⏳", find:"🔍", sing:"🎤", dance:"💃"
+  },
+  family: {
+    mother:"👩", father:"👨", brother:"👦", sister:"👧", grandmother:"👵", grandfather:"👴",
+    son:"👦", daughter:"👧", uncle:"🧔", aunt:"👩‍🦰", cousin:"👫", husband:"🤵", wife:"👰",
+    child:"🧒", parents:"👨‍👩‍👧", siblings:"👫", nephew:"👦", niece:"👧", baby:"👶", twins:"👯",
+    boyfriend:"💑", girlfriend:"💑", relative:"👪", neighbor:"🏘️", family:"👨‍👩‍👧‍👦"
+  },
+  fruit: {
+    apple:"🍎", banana:"🍌", orange:"🍊", grape:"🍇", strawberry:"🍓", watermelon:"🍉",
+    pear:"🍐", peach:"🍑", lemon:"🍋", pineapple:"🍍", mango:"🥭", cherry:"🍒"
+  },
+  transport: {
+    car:"🚗", bus:"🚌", train:"🚆", plane:"✈️", bicycle:"🚲", motorcycle:"🏍️",
+    ship:"🚢", taxi:"🚕", subway:"🚇", truck:"🚚"
+  },
+  animal: {
+    dog:"🐶", cat:"🐱", bird:"🐦", fish:"🐟", horse:"🐴", cow:"🐄", pig:"🐷",
+    chicken:"🐔", sheep:"🐑", rabbit:"🐰", mouse:"🐭", elephant:"🐘", lion:"🦁", tiger:"🐯"
+  },
+  food: {
+    bread:"🍞", rice:"🍚", noodle:"🍜", soup:"🥣", cheese:"🧀", egg:"🥚", meat:"🥩",
+    butter:"🧈", sugar:"🍬", salt:"🧂", cake:"🍰", chocolate:"🍫", "ice cream":"🍨", sandwich:"🥪"
+  },
+  drink: {
+    water:"💧", coffee:"☕", tea:"🍵", juice:"🧃", milk:"🥛", beer:"🍺", wine:"🍷"
+  },
+  color: {
+    red:"🔴", blue:"🔵", green:"🟢", yellow:"🟡", black:"⚫", white:"⚪",
+    pink:"🌸", orange:"🟠", purple:"🟣", brown:"🟤", gray:"🌫️"
+  },
+  body: {
+    head:"👤", eye:"👁️", ear:"👂", nose:"👃", mouth:"👄", tooth:"🦷",
+    hand:"🖐️", foot:"🦶", arm:"💪", leg:"🦵", finger:"👆", hair:"💇", shoulder:"🤷", heart:"❤️"
+  },
+  clothing: {
+    shirt:"👕", pants:"👖", dress:"👗", shoes:"👟", hat:"🎩", coat:"🧥",
+    jacket:"🧥", sock:"🧦", glove:"🧤", scarf:"🧣"
+  },
+  room: {
+    kitchen:"🍳", bedroom:"🛏️", bathroom:"🛁", "living room":"🛋️", table:"🍽️",
+    chair:"🪑", bed:"🛏️", sofa:"🛋️", door:"🚪", window:"🪟", lamp:"💡", mirror:"🪞"
+  },
+  school_items: {
+    book:"📕", pen:"🖊️", pencil:"✏️", bag:"🎒", paper:"📄", notebook:"📓",
+    ruler:"📏", eraser:"🧽", computer:"💻", desk:"🖥️"
+  },
+  weather: {
+    sun:"☀️", rain:"🌧️", snow:"❄️", wind:"💨", cloud:"☁️", storm:"⛈️", fog:"🌫️"
+  },
+  time: {
+    morning:"🌅", afternoon:"🌞", evening:"🌆", night:"🌙",
+    today:"📅", tomorrow:"📆", yesterday:"📃",
+    week:"🗓️", month:"🗓️", year:"📅", hour:"⏰"
+  },
+  place: {
+    park:"🌳", store:"🏪", school:"🏫", hospital:"🏥", restaurant:"🍴", museum:"🏛️",
+    library:"📚", bank:"🏦", airport:"🛫", station:"🚉", beach:"🏖️", city:"🏙️"
+  },
+  season: {
+    spring:"🌷", summer:"☀️", autumn:"🍂", winter:"❄️"
+  },
+  day: {
+    Monday:"📅", Tuesday:"📅", Wednesday:"📅", Thursday:"📅",
+    Friday:"📅", Saturday:"🎉", Sunday:"🛌"
+  },
+  month: {
+    January:"❄️", February:"💝", March:"🌷", April:"🌧️", May:"🌸", June:"☀️",
+    July:"🌻", August:"🌊", September:"🍂", October:"🎃", November:"🍁", December:"🎄"
+  }
+};
+function emojiFor(item) { return (EMOJI[item.c] || {})[item.en] || ""; }
+
 const CAT_EMOJI = {
   letter:"🔤", number:"🔢", verb:"⚡",
   family:"👨‍👩‍👧", fruit:"🍎", transport:"🚌", animal:"🐶",
@@ -961,6 +1063,13 @@ function renderGrid() {
     w.className = "g-word";
     w.textContent = txt(item);
     card.appendChild(w);
+    const e = emojiFor(item);
+    if (e) {
+      const eEl = document.createElement("div");
+      eEl.className = "g-emoji";
+      eEl.textContent = e;
+      card.appendChild(eEl);
+    }
     if (showT && hasZh(item) && item.zh) {
       const z = document.createElement("div");
       z.className = "g-zh";
@@ -979,6 +1088,7 @@ function renderSingle() {
   document.getElementById("badge").textContent = (CAT_EMOJI[item.c] || "") + " " + CAT_LABEL[item.c];
   document.getElementById("cnt").textContent = (singleIdx + 1) + " / " + pool.length;
   document.getElementById("single-word").textContent = txt(item);
+  document.getElementById("single-emoji").textContent = emojiFor(item);
   const ctxEl = document.getElementById("single-ctx");
   const ctxHtml = ctx(item);
   ctxEl.innerHTML = ctxHtml;
